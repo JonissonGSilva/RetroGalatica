@@ -1,0 +1,24 @@
+// Configuração da API OpenAI para geração de mensagens dinâmicas
+// 
+// INSTRUÇÕES:
+// 1. Copie este arquivo para config.js: cp config.js.example config.js
+// 2. Obtenha sua API key em: https://platform.openai.com/api-keys
+// 3. Cole sua API key abaixo
+// 4. Escolha o modelo (gpt-3.5-turbo é mais barato, gpt-4 tem melhor qualidade)
+// 5. Salve o arquivo
+//
+// IMPORTANTE: NUNCA compartilhe ou faça commit do arquivo config.js com sua API key!
+// Adicione config.js ao .gitignore
+
+// Sua API key da OpenAI
+window.OPENAI_API_KEY = 'sk-sua-chave-aqui';
+
+// Modelo a ser usado:
+// - 'gpt-3.5-turbo': Mais barato e rápido (recomendado)
+// - 'gpt-4': Melhor qualidade, mas mais caro
+window.OPENAI_MODEL = 'gpt-3.5-turbo';
+
+// Exemplo de configuração completa:
+// window.OPENAI_API_KEY = 'sk-proj-abc123...';
+// window.OPENAI_MODEL = 'gpt-3.5-turbo';
+
