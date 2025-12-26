@@ -142,6 +142,17 @@ def extrair_awards_jogadores(players: List[Dict]) -> Tuple[Dict[str, List[Tuple[
         'totalDraw'
     ]
     
+    # Categorias de awards (goleiros não devem aparecer nessas categorias)
+    categorias_awards = [
+        'craque',
+        'artilheiro',
+        'garcom',
+        'muralha',
+        'pereba',
+        'bolaMurcha',
+        'xerifao'
+    ]
+    
     for player in players:
         # Normaliza o nome removendo espaços extras no início/fim
         nome = player.get('fullName', 'Sem nome').strip()
@@ -207,6 +218,23 @@ def extrair_awards_jogadores(players: List[Dict]) -> Tuple[Dict[str, List[Tuple[
                     except (ValueError, TypeError):
                         continue
     
+    # Cria dicionário com dados completos de cada jogador para desempate
+    # Mapeia nome_jogador -> (vitórias, partidas)
+    dados_completos_jogadores = {}
+    dados_completos_goleiros = {}
+    
+    # Preenche dados completos de jogadores não-goleiros
+    for nome_jogador, dados in dados_por_jogador.items():
+        vitorias = dados.get('totalWins', 0)
+        partidas = dados.get('totalGamePlayed', 0)
+        dados_completos_jogadores[nome_jogador] = (vitorias, partidas)
+    
+    # Preenche dados completos de goleiros
+    for nome_jogador, dados in dados_por_goleiro.items():
+        vitorias = dados.get('totalWins', 0)
+        partidas = dados.get('totalGamePlayed', 0)
+        dados_completos_goleiros[nome_jogador] = (vitorias, partidas)
+    
     # Agora agrupa por categoria
     categorias = defaultdict(list)
     
@@ -220,17 +248,33 @@ def extrair_awards_jogadores(players: List[Dict]) -> Tuple[Dict[str, List[Tuple[
     for nome_jogador, dados in dados_por_goleiro.items():
         for categoria, quantidade_total in dados.items():
             if quantidade_total > 0:
+                # Ignora awards para goleiros (eles têm seção própria)
+                if categoria in categorias_awards:
+                    continue
                 # Adiciona prefixo "goleiro_" para categorias de partidas
                 if categoria in campos_estatisticas_goleiros:
                     categoria_prefixo = f'goleiro_{categoria}'
                 else:
-                    # Awards e estatísticas gerais dos goleiros também vão para categorias normais
+                    # Estatísticas gerais dos goleiros (não awards) vão para categorias normais
                     categoria_prefixo = categoria
                 categorias[categoria_prefixo].append((nome_jogador, quantidade_total))
     
-    # Ordena cada categoria por quantidade (decrescente)
+    # Ordena cada categoria por quantidade (decrescente) com desempate
+    # Critério de desempate: mais vitórias, depois menos partidas
+    def chave_ordenacao(item):
+        nome_jogador, quantidade = item
+        # Busca dados de desempate (vitórias e partidas)
+        # Tenta primeiro em jogadores normais, depois em goleiros
+        vitorias, partidas = dados_completos_jogadores.get(nome_jogador, dados_completos_goleiros.get(nome_jogador, (0, 999999)))
+        # Retorna tupla: (quantidade, vitórias, -partidas)
+        # Com reverse=True:
+        # - quantidade: maior é melhor ✓ (ordena decrescente)
+        # - vitórias: maior é melhor ✓ (ordena decrescente)
+        # - -partidas: valores negativos maiores = partidas menores ✓ (ordena decrescente)
+        return (quantidade, vitorias, -partidas)
+    
     for categoria in categorias:
-        categorias[categoria].sort(key=lambda x: x[1], reverse=True)
+        categorias[categoria].sort(key=chave_ordenacao, reverse=True)
     
     return categorias, imagens_jogadores
 
