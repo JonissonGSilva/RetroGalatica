@@ -2823,11 +2823,40 @@ def gerar_ranking_html(categorias: Dict[str, List[Tuple[str, int]]], imagens_jog
     }
     
     # Gera o HTML para cada categoria (story de ranking)
+    # Ordem: Partidas, Gols, Assistências, Vitórias, Empates, Derrotas, Goleiros, Awards
     # +1 slide final de encerramento
-    total_slides = len(categorias) + 1
+    
+    # Define ordem das categorias (mesma ordem do Markdown)
+    ordem_categorias = [
+        # Estatísticas Gerais
+        'totalGamePlayed',  # Partidas Jogadas
+        'totalGoals',  # Gols
+        'totalAssistence',  # Assistências
+        'totalWins',  # Vitórias
+        'totalDraw',  # Empates
+        'totalDefeat',  # Derrotas
+        # Goleiros
+        'goleiro_totalGamePlayed',  # Partidas (Goleiros)
+        'goleiro_totalWins',  # Vitórias (Goleiros)
+        'goleiro_totalDraw',  # Empates (Goleiros)
+        'goleiro_totalDefeat',  # Derrotas (Goleiros)
+        # Awards (por último)
+        'craque',
+        'artilheiro',
+        'garcom',
+        'xerifao',
+        'pereba',
+        'bolaMurcha',
+        'muralha'
+    ]
+    
+    # Filtra apenas categorias que existem e mantém a ordem
+    categorias_ordenadas = [(cat, categorias[cat]) for cat in ordem_categorias if cat in categorias]
+    
+    total_slides = len(categorias_ordenadas) + 1
     slide_num = 0
     
-    for categoria, rankings in categorias.items():
+    for categoria, rankings in categorias_ordenadas:
         slide_num += 1
         nome_amigavel = nomes_categorias.get(categoria, categoria.capitalize())
         icone = icones_categorias.get(categoria, '🏆')
