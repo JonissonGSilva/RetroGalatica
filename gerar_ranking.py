@@ -2971,8 +2971,8 @@ def gerar_ranking_html(categorias: Dict[str, List[Tuple[str, int]]], imagens_jog
             <div class="slide-content">
                 <div class="slide-header">
                     <div class="story-year">Temporada Encerrada</div>
-                    <div class="categoria-titulo">Isso não é o fim da sua carreira</div>
-                    <div class="story-subtitle">A próxima temporada já está te esperando!</div>
+                    <div class="categoria-titulo">Isso não é o fim da carreira</div>
+                    <div class="story-subtitle">A próxima temporada está te esperando!</div>
                 </div>
                 <div class="categoria-titulo" style="margin-top: 12px;">
                    #GalaticosFC
