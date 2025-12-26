@@ -9,8 +9,14 @@ import json
 import re
 import os
 import random
+import sys
 from collections import defaultdict
 from typing import Dict, List, Tuple, Optional
+
+# Configura encoding UTF-8 para o stdout (necessário no Windows)
+if sys.platform == 'win32':
+    import io
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
 
 # Carrega variáveis de ambiente do arquivo .env
 try:
@@ -100,7 +106,7 @@ def parse_mongodb_json(content: str) -> List[Dict]:
 def extrair_awards_jogadores(players: List[Dict]) -> Tuple[Dict[str, List[Tuple[str, int]]], Dict[str, str]]:
     """
     Extrai os awards e estatísticas de cada jogador e agrupa por categoria.
-    Soma os awards e estatísticas do nível raiz do jogador e dos times em includedTeams.
+    Extrai os dados APENAS do time em includedTeams que corresponde ao teamCode do jogador.
     Separa goleiros dos demais jogadores para estatísticas de partidas.
     
     Retorna uma tupla com:
@@ -150,77 +156,56 @@ def extrair_awards_jogadores(players: List[Dict]) -> Tuple[Dict[str, List[Tuple[
         # Determina qual dicionário usar
         dados_alvo = dados_por_goleiro if is_goleiro else dados_por_jogador
         
-        # Awards do nível raiz do jogador (todos têm awards)
-        awards_raiz = player.get('awards', {})
-        for categoria, quantidade in awards_raiz.items():
-            if isinstance(quantidade, (int, str)):
-                try:
-                    qtd = int(quantidade)
-                    if qtd > 0:
-                        dados_alvo[nome][categoria] += qtd
-                except (ValueError, TypeError):
-                    continue
+        # Obtém o teamCode do jogador no nível raiz
+        player_team_code = player.get('teamCode', '').strip()
         
-        # Estatísticas gerais do nível raiz (todos têm)
-        for campo in campos_estatisticas_gerais:
-            valor = player.get(campo, 0)
-            if isinstance(valor, (int, str)):
-                try:
-                    qtd = int(valor)
-                    if qtd > 0:
-                        dados_alvo[nome][campo] += qtd
-                except (ValueError, TypeError):
-                    continue
-        
-        # Estatísticas de partidas (separadas por tipo de jogador)
-        campos_partidas = campos_estatisticas_goleiros if is_goleiro else campos_estatisticas_partidas
-        for campo in campos_partidas:
-            valor = player.get(campo, 0)
-            if isinstance(valor, (int, str)):
-                try:
-                    qtd = int(valor)
-                    if qtd > 0:
-                        dados_alvo[nome][campo] += qtd
-                except (ValueError, TypeError):
-                    continue
-        
-        # Awards e estatísticas dos times em includedTeams
+        # Busca o time correspondente em includedTeams
         included_teams = player.get('includedTeams', [])
-        if isinstance(included_teams, list):
+        team_data = None
+        
+        if isinstance(included_teams, list) and player_team_code:
             for team in included_teams:
                 if isinstance(team, dict):
-                    # Awards do time (todos têm)
-                    awards_team = team.get('awards', {})
-                    for categoria, quantidade in awards_team.items():
-                        if isinstance(quantidade, (int, str)):
-                            try:
-                                qtd = int(quantidade)
-                                if qtd > 0:
-                                    dados_alvo[nome][categoria] += qtd
-                            except (ValueError, TypeError):
-                                continue
-                    
-                    # Estatísticas gerais do time (todos têm)
-                    for campo in campos_estatisticas_gerais:
-                        valor = team.get(campo, 0)
-                        if isinstance(valor, (int, str)):
-                            try:
-                                qtd = int(valor)
-                                if qtd > 0:
-                                    dados_alvo[nome][campo] += qtd
-                            except (ValueError, TypeError):
-                                continue
-                    
-                    # Estatísticas de partidas do time (separadas)
-                    for campo in campos_partidas:
-                        valor = team.get(campo, 0)
-                        if isinstance(valor, (int, str)):
-                            try:
-                                qtd = int(valor)
-                                if qtd > 0:
-                                    dados_alvo[nome][campo] += qtd
-                            except (ValueError, TypeError):
-                                continue
+                    team_code = team.get('teamCode', '').strip()
+                    if team_code == player_team_code:
+                        team_data = team
+                        break
+        
+        # Se encontrou o time correspondente, extrai os dados apenas desse time
+        if team_data:
+            # Awards do time
+            awards_team = team_data.get('awards', {})
+            for categoria, quantidade in awards_team.items():
+                if isinstance(quantidade, (int, str)):
+                    try:
+                        qtd = int(quantidade)
+                        if qtd > 0:
+                            dados_alvo[nome][categoria] += qtd
+                    except (ValueError, TypeError):
+                        continue
+            
+            # Estatísticas gerais do time
+            for campo in campos_estatisticas_gerais:
+                valor = team_data.get(campo, 0)
+                if isinstance(valor, (int, str)):
+                    try:
+                        qtd = int(valor)
+                        if qtd > 0:
+                            dados_alvo[nome][campo] += qtd
+                    except (ValueError, TypeError):
+                        continue
+            
+            # Estatísticas de partidas do time (separadas por tipo de jogador)
+            campos_partidas = campos_estatisticas_goleiros if is_goleiro else campos_estatisticas_partidas
+            for campo in campos_partidas:
+                valor = team_data.get(campo, 0)
+                if isinstance(valor, (int, str)):
+                    try:
+                        qtd = int(valor)
+                        if qtd > 0:
+                            dados_alvo[nome][campo] += qtd
+                    except (ValueError, TypeError):
+                        continue
     
     # Agora agrupa por categoria
     categorias = defaultdict(list)
@@ -4084,6 +4069,15 @@ def main():
         with open(output_file, 'w', encoding='utf-8') as f:
             f.write(html)
         print(f"✅ Ranking gerado com sucesso: {output_file}")
+        
+        # Também copia para index.html para GitHub Pages
+        try:
+            with open('index.html', 'w', encoding='utf-8') as f:
+                f.write(html)
+            print(f"✅ index.html atualizado para GitHub Pages")
+        except Exception as e:
+            print(f"⚠️  Aviso: Não foi possível atualizar index.html: {e}")
+        
         print(f"🌐 Abra o arquivo no navegador para visualizar o ranking!")
     except Exception as e:
         print(f"❌ Erro ao salvar arquivo: {e}")
