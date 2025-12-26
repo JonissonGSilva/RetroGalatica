@@ -267,18 +267,23 @@ def extrair_awards_jogadores(players: List[Dict]) -> Tuple[Dict[str, List[Tuple[
                 categorias[categoria_prefixo].append((nome_jogador, quantidade_total))
     
     # Ordena cada categoria por quantidade (decrescente) com desempate
-    # Critério de desempate: mais vitórias, depois menos partidas
+    # Critério de desempate: taxa de aproveitamento (vitórias/partidas), depois menos partidas
     def chave_ordenacao(item):
         nome_jogador, quantidade = item
         # Busca dados de desempate (vitórias e partidas)
         # Tenta primeiro em jogadores normais, depois em goleiros
         vitorias, partidas = dados_completos_jogadores.get(nome_jogador, dados_completos_goleiros.get(nome_jogador, (0, 999999)))
-        # Retorna tupla: (quantidade, vitórias, -partidas)
+        
+        # Calcula taxa de aproveitamento (vitórias/partidas)
+        # Se não tem partidas, taxa é 0
+        taxa_aproveitamento = (vitorias / partidas) if partidas > 0 else 0.0
+        
+        # Retorna tupla: (quantidade, taxa_aproveitamento, -partidas)
         # Com reverse=True:
         # - quantidade: maior é melhor ✓ (ordena decrescente)
-        # - vitórias: maior é melhor ✓ (ordena decrescente)
+        # - taxa_aproveitamento: maior é melhor ✓ (ordena decrescente)
         # - -partidas: valores negativos maiores = partidas menores ✓ (ordena decrescente)
-        return (quantidade, vitorias, -partidas)
+        return (quantidade, taxa_aproveitamento, -partidas)
     
     for categoria in categorias:
         categorias[categoria].sort(key=chave_ordenacao, reverse=True)
