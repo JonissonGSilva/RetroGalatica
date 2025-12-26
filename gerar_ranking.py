@@ -4424,6 +4424,78 @@ def main():
                 print(f"   {medalha} {idx}º - {nome}: {quantidade}")
         else:
             print("   (Nenhum dado disponível)")
+    
+    # Gera arquivo Markdown com ranking completo
+    try:
+        md_content = "# 🏆 Ranking Galático - Retrospectiva Completa\n\n"
+        md_content += f"*Gerado em: {__import__('datetime').datetime.now().strftime('%d/%m/%Y %H:%M:%S')}*\n\n"
+        md_content += "---\n\n"
+        
+        # Ordem das categorias conforme solicitado:
+        # 1. Partidas jogadas, 2. Gols, 3. Assistências, 4. Vitórias, 5. Empates, 6. Derrotas, 7. Awards
+        categorias_estatisticas_ordem = ['totalGamePlayed', 'totalGoals', 'totalAssistence', 'totalWins', 'totalDraw', 'totalDefeat']
+        categorias_goleiros_ordem = ['goleiro_totalGamePlayed', 'goleiro_totalWins', 'goleiro_totalDraw', 'goleiro_totalDefeat']
+        categorias_awards_list = ['craque', 'artilheiro', 'garcom', 'xerifao', 'pereba', 'bolaMurcha', 'muralha']
+        
+        # Seção de Estatísticas Gerais (na ordem solicitada)
+        md_content += "## 📊 Estatísticas Gerais\n\n"
+        for categoria in categorias_estatisticas_ordem:
+            if categoria in categorias:
+                nome_amigavel = nomes_categorias.get(categoria, categoria.capitalize())
+                md_content += f"### {nome_amigavel}\n\n"
+                md_content += "| Posição | Jogador | Quantidade |\n"
+                md_content += "|---------|---------|------------|\n"
+                rankings = categorias[categoria]
+                for idx, (nome, quantidade) in enumerate(rankings, 1):
+                    if idx <= 3:
+                        medalha = ['🥇', '🥈', '🥉'][idx - 1]
+                        md_content += f"| {medalha} {idx}º | {nome} | {quantidade} |\n"
+                    else:
+                        md_content += f"| {idx}º | {nome} | {quantidade} |\n"
+                md_content += "\n"
+        
+        # Seção de Goleiros
+        md_content += "## 🥅 Estatísticas de Goleiros\n\n"
+        for categoria in categorias_goleiros_ordem:
+            if categoria in categorias:
+                nome_amigavel = nomes_categorias.get(categoria, categoria.capitalize())
+                md_content += f"### {nome_amigavel}\n\n"
+                md_content += "| Posição | Jogador | Quantidade |\n"
+                md_content += "|---------|---------|------------|\n"
+                rankings = categorias[categoria]
+                for idx, (nome, quantidade) in enumerate(rankings, 1):
+                    if idx <= 3:
+                        medalha = ['🥇', '🥈', '🥉'][idx - 1]
+                        md_content += f"| {medalha} {idx}º | {nome} | {quantidade} |\n"
+                    else:
+                        md_content += f"| {idx}º | {nome} | {quantidade} |\n"
+                md_content += "\n"
+        
+        # Seção de Awards (por último)
+        md_content += "## 🎖️ Awards\n\n"
+        for categoria in categorias_awards_list:
+            if categoria in categorias:
+                nome_amigavel = nomes_categorias.get(categoria, categoria.capitalize())
+                md_content += f"### {nome_amigavel}\n\n"
+                md_content += "| Posição | Jogador | Quantidade |\n"
+                md_content += "|---------|---------|------------|\n"
+                rankings = categorias[categoria]
+                for idx, (nome, quantidade) in enumerate(rankings, 1):
+                    if idx <= 3:
+                        medalha = ['🥇', '🥈', '🥉'][idx - 1]
+                        md_content += f"| {medalha} {idx}º | {nome} | {quantidade} |\n"
+                    else:
+                        md_content += f"| {idx}º | {nome} | {quantidade} |\n"
+                md_content += "\n"
+        
+        # Salva arquivo Markdown
+        md_file = 'RANKING_COMPLETO.md'
+        with open(md_file, 'w', encoding='utf-8') as f:
+            f.write(md_content)
+        print(f"\n✅ Arquivo Markdown gerado: {md_file}")
+        
+    except Exception as e:
+        print(f"⚠️  Aviso: Não foi possível gerar arquivo Markdown: {e}")
 
 
 if __name__ == '__main__':
