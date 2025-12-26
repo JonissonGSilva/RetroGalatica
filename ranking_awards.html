@@ -1270,6 +1270,184 @@
             cursor: not-allowed;
         }
         
+        .btn-nao-sei-nome {
+            width: 100%;
+            padding: 12px;
+            font-size: clamp(0.9rem, 2.2vw, 1rem);
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.9);
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+            margin-bottom: 12px;
+        }
+        
+        .btn-nao-sei-nome:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+        
+        .btn-nao-sei-nome:active {
+            transform: translateY(0);
+        }
+        
+        /* Modal de Jogadores */
+        .modal-jogadores {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            z-index: 10000;
+            animation: fadeIn 0.3s ease;
+            overflow-y: auto;
+        }
+        
+        .modal-jogadores.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .modal-content {
+            background: linear-gradient(135deg, #1d1b4c, #3b0764);
+            border-radius: 20px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 80vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            animation: scaleIn 0.3s ease;
+            overflow: hidden;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 24px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .modal-header h2 {
+            font-size: clamp(1.5rem, 4vw, 2rem);
+            font-weight: 700;
+            color: #ffffff;
+            margin: 0;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+        }
+        
+        .modal-close {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: #ffffff;
+            font-size: 2rem;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            line-height: 1;
+        }
+        
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: rotate(90deg);
+        }
+        
+        .modal-body {
+            padding: 24px;
+            overflow-y: auto;
+            flex: 1;
+        }
+        
+        .modal-busca {
+            width: 100%;
+            padding: 12px 16px;
+            font-size: 1rem;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            margin-bottom: 16px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            color: #ffffff;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .modal-busca::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .modal-busca:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.6);
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .modal-lista {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 12px;
+            max-height: 50vh;
+            overflow-y: auto;
+        }
+        
+        .modal-item {
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            color: #ffffff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+        
+        .modal-item:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+        
+        .modal-item:active {
+            transform: translateY(0);
+        }
+        
+        @media (max-width: 768px) {
+            .modal-content {
+                max-width: 90vw;
+                max-height: 90vh;
+            }
+            
+            .modal-lista {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+                gap: 10px;
+            }
+            
+            .modal-item {
+                padding: 10px 12px;
+                font-size: 0.9rem;
+            }
+        }
+        
         /* Retrospectiva */
         .retrospectiva-slide {
             min-width: 100vw;
@@ -1981,8 +2159,25 @@
             <h1>Ranking Galático</h1>
             <p>Descubra sua jornada e compare-se com os grandes do futebol</p>
             <input type="text" id="input-nome-jogador" class="input-nome" placeholder="Digite seu nome completo (opcional)" autocomplete="off">
+            <button class="btn-nao-sei-nome" onclick="abrirModalJogadores()">Não sei meu nome no app</button>
             <button class="btn-iniciar" onclick="iniciarRetrospectiva()">Iniciar Minha Jornada</button>
             <p style="margin-top: 20px; font-size: 0.9em; color: rgba(255, 255, 255, 0.8); text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);">Ou pressione Enter para ver o ranking geral</p>
+        </div>
+    </div>
+    
+    <!-- Modal de Lista de Jogadores -->
+    <div class="modal-jogadores" id="modal-jogadores" onclick="fecharModalJogadores(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h2>Lista de Jogadores</h2>
+                <button class="modal-close" onclick="fecharModalJogadores()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input type="text" id="modal-busca" class="modal-busca" placeholder="Buscar jogador..." onkeyup="filtrarJogadores()">
+                <div class="modal-lista" id="modal-lista">
+                    <!-- Lista será populada via JavaScript -->
+                </div>
+            </div>
         </div>
     </div>
     
@@ -2053,7 +2248,7 @@
                     </div>
                     <div class="ranking-highlight-text">
                         <div class="ranking-highlight-name">Tavares</div>
-                        <div class="ranking-highlight-phrase">Tavares é garçom de luxo: 45 assistências servindo gol na bandeja.</div>
+                        <div class="ranking-highlight-phrase">Com 45 assistências, Tavares faz a bola falar e os companheiros brilharem.</div>
                     </div>
                 </div>
                 <div class="ranking-simple-list">
@@ -2197,7 +2392,7 @@
                     </div>
                     <div class="ranking-highlight-text">
                         <div class="ranking-highlight-name">Kelvin</div>
-                        <div class="ranking-highlight-phrase">Kelvin é garantia de vitória: 97 vitórias e time sempre na frente.</div>
+                        <div class="ranking-highlight-phrase">Quando Kelvin está em campo, as 97 vitórias mostram quem manda na pelada.</div>
                     </div>
                 </div>
                 <div class="ranking-simple-list">
@@ -2293,7 +2488,7 @@
                     </div>
                     <div class="ranking-highlight-text">
                         <div class="ranking-highlight-name">Cabinha</div>
-                        <div class="ranking-highlight-phrase">Cabinha empatou 62 vezes, sempre equilibrado e justo.</div>
+                        <div class="ranking-highlight-phrase">Cabinha tem 62 empates no histórico, sempre deixando tudo no meio termo.</div>
                     </div>
                 </div>
                 <div class="ranking-simple-list">
@@ -2341,7 +2536,7 @@
                     </div>
                     <div class="ranking-highlight-text">
                         <div class="ranking-highlight-name">Arnaldo</div>
-                        <div class="ranking-highlight-phrase">Arnaldo é especialista em servir: 7 assistências e muito respeito.</div>
+                        <div class="ranking-highlight-phrase">Com 7 assistências, Arnaldo serve gol na bandeja e faz a diferença.</div>
                     </div>
                 </div>
                 <div class="ranking-simple-list">
@@ -2389,7 +2584,7 @@
                     </div>
                     <div class="ranking-highlight-text">
                         <div class="ranking-highlight-name">Henrique silva</div>
-                        <div class="ranking-highlight-phrase">Com 10 atuações como xerifão, Henrique silva mantém a ordem em campo.</div>
+                        <div class="ranking-highlight-phrase">Henrique silva é o xerifão da pelada: 10 vezes no comando e sempre casca grossa.</div>
                     </div>
                 </div>
                 <div class="ranking-simple-list">
@@ -2437,7 +2632,7 @@
                     </div>
                     <div class="ranking-highlight-text">
                         <div class="ranking-highlight-name">Kelvin</div>
-                        <div class="ranking-highlight-phrase">Craque de bola e próximo ganhador da bola de ouro! Kelvin foi artilheiro 11 vezes.</div>
+                        <div class="ranking-highlight-phrase">Kelvin tem faro de gol absurdo: 11 vezes como artilheiro, impossível marcar esse cara.</div>
                     </div>
                 </div>
                 <div class="ranking-simple-list">
@@ -2485,7 +2680,7 @@
                     </div>
                     <div class="ranking-highlight-text">
                         <div class="ranking-highlight-name">Arnaldo</div>
-                        <div class="ranking-highlight-phrase">Com 4 perebas no currículo, Arnaldo prova que até nos melhores dias, tem dias ruins.</div>
+                        <div class="ranking-highlight-phrase">Arnaldo colecionou 4 perebas, mas sempre volta a ser ruim só pela resenha.</div>
                     </div>
                 </div>
                 <div class="ranking-simple-list">
@@ -2533,7 +2728,7 @@
                     </div>
                     <div class="ranking-highlight-text">
                         <div class="ranking-highlight-name">Deyvde</div>
-                        <div class="ranking-highlight-phrase">Deyvde colecionou 4 bolas murchas, mas a determinação continua pra colecionando mais.</div>
+                        <div class="ranking-highlight-phrase">Deyvde teve 4 momentos como bola murcha, mas sempre vai em busca de mais momentos...</div>
                     </div>
                 </div>
                 <div class="ranking-simple-list">
@@ -2629,7 +2824,7 @@
                     </div>
                     <div class="ranking-highlight-text">
                         <div class="ranking-highlight-name">Adson</div>
-                        <div class="ranking-highlight-phrase">Adson é sinônimo de vitória no gol: 117 vitórias e muito respeito.</div>
+                        <div class="ranking-highlight-phrase">Adson é garantia de vitória: 117 triunfos defendendo o gol.</div>
                     </div>
                 </div>
                 <div class="ranking-simple-list">
@@ -2725,7 +2920,7 @@
                     </div>
                     <div class="ranking-highlight-text">
                         <div class="ranking-highlight-name">Adson</div>
-                        <div class="ranking-highlight-phrase">Adson tem 94 empates defendendo, sempre deixando tudo no meio termo.</div>
+                        <div class="ranking-highlight-phrase">Com 94 empates, Adson mostra que sabe equilibrar o jogo no gol.</div>
                     </div>
                 </div>
                 <div class="ranking-simple-list">
@@ -2789,6 +2984,7 @@
         const categoriasData = {"craque": [["Vertinho", 4], ["Tavares", 4], ["Kelvin", 3], ["Arnaldo", 3], ["Andrew", 3], ["Roboz\u00e3o", 3], ["Jos\u00e9 Awdryn", 2], ["Caio Marques", 2], ["Marcelino", 2], ["Kaw\u00e3 Messi", 2], ["Adelson", 1], ["Cabinha", 1], ["F\u00e1bio Lucas", 1], ["Deyvde", 1], ["Israel Lucas", 1], ["Jonis", 1], ["Caio Fillype", 1]], "totalAssistence": [["Tavares", 45], ["Kelvin", 41], ["Arnaldo", 35], ["Vertinho", 33], ["Andrew", 26], ["Jos\u00e9 Awdryn", 21], ["Adelson", 17], ["Caio Marques", 15], ["Weslly Viana", 14], ["F\u00e1bio Lucas", 13], ["Cabinha", 12], ["Adson", 10], ["Roboz\u00e3o", 10], ["Henrique silva", 9], ["Ronald", 8], ["Israel Lucas", 8], ["Deyvde", 6], ["weverton r", 6], ["Samuel", 5], ["Marcelino", 5], ["Caio Fillype", 5], ["Lito", 3], ["Guilherme", 3], ["Mateus Santana", 2], ["Kaw\u00e3 Messi", 2], ["Gustavo Paiva", 2], ["Lucas Passos", 1], ["Jonis", 1], ["Vini", 1], ["Eduardo Panda", 1], ["Lucas", 1]], "totalGoals": [["Kelvin", 79], ["Arnaldo", 61], ["Vertinho", 50], ["Tavares", 39], ["Jos\u00e9 Awdryn", 38], ["F\u00e1bio Lucas", 33], ["Adelson", 25], ["Andrew", 23], ["Deyvde", 23], ["Israel Lucas", 22], ["Ronald", 20], ["Caio Marques", 17], ["Roboz\u00e3o", 15], ["Marcelino", 15], ["weverton r", 14], ["Cabinha", 12], ["Weslly Viana", 8], ["Henrique silva", 7], ["Jonis", 7], ["Samuel", 6], ["Adson", 4], ["Caio Fillype", 4], ["Mateus Santana", 3], ["Lito", 2], ["Guilherme", 2], ["Vini", 2], ["Matheus rafael", 1], ["Kaw\u00e3 Messi", 1], ["Gustavo Paiva", 1], ["Lucas Passos", 1], ["Luan Guedes", 1]], "totalGamePlayed": [["Kelvin", 220], ["Vertinho", 218], ["Tavares", 179], ["Cabinha", 178], ["Jos\u00e9 Awdryn", 175], ["Adelson", 171], ["Henrique silva", 169], ["Caio Marques", 155], ["Deyvde", 152], ["Arnaldo", 147], ["Andrew", 134], ["Roboz\u00e3o", 114], ["F\u00e1bio Lucas", 108], ["Lito", 98], ["Ronald", 96], ["Marcelino", 75], ["Weslly Viana", 70], ["Israel Lucas", 69], ["Samuel", 50], ["Guilherme", 50], ["Lucas Passos", 50], ["Gustavo Paiva", 40], ["weverton r", 38], ["Jonis", 31], ["Kaw\u00e3 Messi", 27], ["Eduardo Panda", 22], ["Caio Fillype", 19], ["Luan Guedes", 16], ["Vini", 12], ["Jo\u00e3o Victor", 11], ["Lucas Messi", 7], ["Lucas", 4], ["Matheus", 4]], "totalWins": [["Kelvin", 97], ["Vertinho", 77], ["Jos\u00e9 Awdryn", 72], ["Arnaldo", 65], ["Tavares", 65], ["Andrew", 62], ["Caio Marques", 61], ["Adelson", 61], ["Cabinha", 54], ["Henrique silva", 53], ["F\u00e1bio Lucas", 44], ["Deyvde", 44], ["Ronald", 38], ["Weslly Viana", 35], ["Roboz\u00e3o", 33], ["Israel Lucas", 29], ["Lito", 25], ["Samuel", 21], ["Marcelino", 21], ["Guilherme", 19], ["weverton r", 15], ["Kaw\u00e3 Messi", 12], ["Gustavo Paiva", 12], ["Lucas Passos", 10], ["Jonis", 9], ["Caio Fillype", 7], ["Vini", 6], ["Luan Guedes", 4], ["Eduardo Panda", 4], ["Lucas", 2], ["Jo\u00e3o Victor", 2], ["Matheus", 1], ["Lucas Messi", 1]], "totalDefeat": [["Vertinho", 79], ["Henrique silva", 68], ["Kelvin", 63], ["Cabinha", 62], ["Tavares", 58], ["Adelson", 54], ["Deyvde", 52], ["Lito", 51], ["Caio Marques", 48], ["Jos\u00e9 Awdryn", 44], ["Arnaldo", 43], ["Roboz\u00e3o", 42], ["Marcelino", 36], ["F\u00e1bio Lucas", 33], ["Andrew", 31], ["Ronald", 31], ["Israel Lucas", 22], ["Lucas Passos", 21], ["Samuel", 17], ["Guilherme", 16], ["weverton r", 15], ["Gustavo Paiva", 15], ["Jonis", 14], ["Eduardo Panda", 13], ["Weslly Viana", 10], ["Kaw\u00e3 Messi", 9], ["Jo\u00e3o Victor", 8], ["Luan Guedes", 6], ["Caio Fillype", 4], ["Vini", 4], ["Matheus", 3], ["Lucas Messi", 3], ["Lucas", 2]], "totalDraw": [["Cabinha", 62], ["Vertinho", 61], ["Kelvin", 60], ["Jos\u00e9 Awdryn", 59], ["Tavares", 56], ["Adelson", 56], ["Deyvde", 56], ["Henrique silva", 48], ["Caio Marques", 46], ["Andrew", 41], ["Arnaldo", 39], ["Roboz\u00e3o", 39], ["F\u00e1bio Lucas", 31], ["Ronald", 27], ["Weslly Viana", 25], ["Lito", 22], ["Lucas Passos", 19], ["Israel Lucas", 18], ["Marcelino", 18], ["Guilherme", 15], ["Gustavo Paiva", 13], ["Samuel", 12], ["weverton r", 8], ["Jonis", 8], ["Caio Fillype", 8], ["Kaw\u00e3 Messi", 6], ["Luan Guedes", 6], ["Eduardo Panda", 5], ["Lucas Messi", 3], ["Vini", 2], ["Jo\u00e3o Victor", 1]], "garcom": [["Arnaldo", 7], ["Tavares", 7], ["Kelvin", 6], ["Andrew", 3], ["Vertinho", 2], ["Cabinha", 2], ["Weslly Viana", 2], ["Jos\u00e9 Awdryn", 1], ["Caio Marques", 1], ["Adelson", 1], ["F\u00e1bio Lucas", 1], ["Deyvde", 1], ["Ronald", 1], ["Israel Lucas", 1], ["Samuel", 1]], "xerifao": [["Henrique silva", 10], ["Weslly Viana", 7], ["Caio Marques", 6], ["Lito", 5], ["Cabinha", 3], ["Kaw\u00e3 Messi", 3], ["Guilherme", 2], ["Ronald", 1], ["Samuel", 1], ["Lucas Passos", 1]], "artilheiro": [["Kelvin", 11], ["Arnaldo", 8], ["Israel Lucas", 4], ["Vertinho", 3], ["Jos\u00e9 Awdryn", 3], ["Tavares", 2], ["F\u00e1bio Lucas", 2], ["Andrew", 1], ["Deyvde", 1], ["Ronald", 1], ["Roboz\u00e3o", 1], ["weverton r", 1]], "pereba": [["Arnaldo", 4], ["Eduardo Panda", 4], ["Kelvin", 3], ["Roboz\u00e3o", 3], ["Deyvde", 2], ["Ronald", 2], ["Lucas Passos", 2], ["Vertinho", 1], ["Jos\u00e9 Awdryn", 1], ["Caio Marques", 1], ["Cabinha", 1], ["Gustavo Paiva", 1], ["Lucas", 1]], "bolaMurcha": [["Deyvde", 4], ["Cabinha", 3], ["Caio Marques", 2], ["Vertinho", 1], ["Jos\u00e9 Awdryn", 1], ["Arnaldo", 1], ["Ronald", 1], ["Roboz\u00e3o", 1]], "goleiro_totalGamePlayed": [["Adson", 323], ["Mateus Santana", 138], ["L\u00e9o Portela", 104], ["Matheus rafael", 67]], "goleiro_totalWins": [["Adson", 117], ["Mateus Santana", 48], ["L\u00e9o Portela", 32], ["Matheus rafael", 21]], "goleiro_totalDefeat": [["Adson", 112], ["Mateus Santana", 56], ["L\u00e9o Portela", 35], ["Matheus rafael", 22]], "goleiro_totalDraw": [["Adson", 94], ["L\u00e9o Portela", 37], ["Mateus Santana", 34], ["Matheus rafael", 24]]};
         const imagensJogadores = {"Jonis": "https://res.cloudinary.com/dmrhyndmi/image/upload/v1755982776/wnqhd8lchqpmoclymnwa.png", "Weslly Viana": "https://res.cloudinary.com/dmrhyndmi/image/upload/v1757258122/uc1yizgolaw2s8tcjpi1.png", "Kelvin": "https://res.cloudinary.com/dmrhyndmi/image/upload/v1715084339/taglrlhstqshlleknrm3.png", "Matheus rafael": "https://res.cloudinary.com/dmrhyndmi/image/upload/v1712614481/bt3cnvr4pk26xjkhjm6d.jpg", "Tavares": "https://res.cloudinary.com/dmrhyndmi/image/upload/v1712617273/wm1av7m9giymztkuf0cd.jpg", "Henrique silva": "https://res.cloudinary.com/dmrhyndmi/image/upload/v1735988189/gusxvgj1f82iusu36lhk.jpg", "L\u00e9o Portela": "https://res.cloudinary.com/dmrhyndmi/image/upload/v1712616669/kiisy4cbwfllsnbsovko.jpg", "Cabinha": "https://res.cloudinary.com/dmrhyndmi/image/upload/v1714254169/gx6bdmg1xt2urcc3yuwo.png", "Adelson": "https://res.cloudinary.com/dmrhyndmi/image/upload/v1712842729/kdo5k44pqvj3vpbb2rdo.webp", "Andrew": "https://res.cloudinary.com/dmrhyndmi/image/upload/v1713139281/llufdmhfnz9kxii5kbxl.jpg", "Roboz\u00e3o": "https://res.cloudinary.com/dmrhyndmi/image/upload/v1722814542/dydha4o5vefdlka7cd1j.webp", "Adson": "https://res.cloudinary.com/dmrhyndmi/image/upload/v1713756676/msajtz0wesvjuwcoimeu.jpg", "Arnaldo": "https://res.cloudinary.com/dmrhyndmi/image/upload/v1742248262/f1dnunep0kylp5nkhi3r.png", "Lucas Passos": "https://res.cloudinary.com/dmrhyndmi/image/upload/v1722812909/hqth7jvsp0tqfuf2rviy.webp", "Vertinho": "https://res.cloudinary.com/dmrhyndmi/image/upload/v1742156230/sq4lb7kwzubun2trlx9j.png", "Deyvde": "https://res.cloudinary.com/dmrhyndmi/image/upload/v1744079866/eizywrix7dicqcybnhdu.png", "Caio Marques": "https://res.cloudinary.com/dmrhyndmi/image/upload/v1746498807/bfuk0hurivjx6xnt1bxl.jpg", "Guilherme": "https://res.cloudinary.com/dmrhyndmi/image/upload/v1748272804/uweklukdt5qox5nl8v35.jpg", "Lito": "https://res.cloudinary.com/dmrhyndmi/image/upload/v1743441721/ckrfn3igzn9liseezaqj.jpg", "F\u00e1bio Lucas": "https://res.cloudinary.com/dmrhyndmi/image/upload/v1743603754/tyaf9qwbwg459zvpviuk.jpg", "Marcelino": "https://res.cloudinary.com/dmrhyndmi/image/upload/v1749476689/rehxvidxd588vstelsjq.jpg", "Samuel": "https://res.cloudinary.com/dmrhyndmi/image/upload/v1756756478/nneki5tssaccuxhwt3nv.webp", "weverton r": "https://res.cloudinary.com/dmrhyndmi/image/upload/v1746967222/oc6qdxgejeoz6zz3nmkh.jpg", "Ronald": "https://res.cloudinary.com/dmrhyndmi/image/upload/v1758563308/dovy4yw1oua06syj29qx.jpg", "Lucas": "https://res.cloudinary.com/dmrhyndmi/image/upload/v1756746819/vopddm2fksdcn0oqrn7i.png"};
         const totalSlidesRanking = 17;
+        const nomesJogadores = ["Adelson", "Adson", "Andrew", "Arnaldo", "Cabinha", "Caio Fillype", "Caio Marques", "Deyvde", "Eduardo Panda", "F\u00e1bio Lucas", "Guilherme", "Gustavo Paiva", "Henrique silva", "Israel Lucas", "Jonis", "Jos\u00e9 Awdryn", "Jo\u00e3o Victor", "Kaw\u00e3 Messi", "Kelvin", "Lito", "Luan Guedes", "Lucas", "Lucas Messi", "Lucas Passos", "L\u00e9o Portela", "Marcelino", "Mateus Santana", "Matheus", "Matheus rafael", "Roboz\u00e3o", "Ronald", "Samuel", "Tavares", "Vertinho", "Vini", "Weslly Viana", "weverton r"];
         
         // Elementos DOM
         const telaInicial = document.getElementById('tela-inicial');
@@ -2797,6 +2993,57 @@
         const navegacao = document.getElementById('navegacao');
         const indicadorSlide = document.getElementById('indicador-slide');
         const inputNome = document.getElementById('input-nome-jogador');
+        
+        // Funções do Modal de Jogadores
+        function abrirModalJogadores() {
+            const modal = document.getElementById('modal-jogadores');
+            const lista = document.getElementById('modal-lista');
+            
+            // Limpa a lista
+            lista.innerHTML = '';
+            
+            // Popula a lista com os nomes dos jogadores
+            nomesJogadores.forEach(nome => {
+                const item = document.createElement('div');
+                item.className = 'modal-item';
+                item.textContent = nome;
+                item.onclick = () => {
+                    inputNome.value = nome;
+                    fecharModalJogadores();
+                    inputNome.focus();
+                };
+                lista.appendChild(item);
+            });
+            
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function fecharModalJogadores(event) {
+            if (event && event.target && event.target.id !== 'modal-jogadores') {
+                return;
+            }
+            const modal = document.getElementById('modal-jogadores');
+            modal.classList.remove('active');
+            document.body.style.overflow = '';
+            // Limpa o campo de busca
+            const busca = document.getElementById('modal-busca');
+            if (busca) busca.value = '';
+        }
+        
+        function filtrarJogadores() {
+            const busca = document.getElementById('modal-busca').value.toLowerCase();
+            const itens = document.querySelectorAll('.modal-item');
+            
+            itens.forEach(item => {
+                const nome = item.textContent.toLowerCase();
+                if (nome.includes(busca)) {
+                    item.style.display = '';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
         
         // Cache para backgrounds e textos gerados
         const backgroundsCache = {};

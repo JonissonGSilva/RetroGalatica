@@ -103,7 +103,7 @@ def parse_mongodb_json(content: str) -> List[Dict]:
     return players
 
 
-def extrair_awards_jogadores(players: List[Dict]) -> Tuple[Dict[str, List[Tuple[str, int]]], Dict[str, str]]:
+def extrair_awards_jogadores(players: List[Dict]) -> Tuple[Dict[str, List[Tuple[str, int]]], Dict[str, str], List[str]]:
     """
     Extrai os awards e estatísticas de cada jogador e agrupa por categoria.
     Extrai os dados APENAS do time em includedTeams que corresponde ao teamCode do jogador.
@@ -112,6 +112,7 @@ def extrair_awards_jogadores(players: List[Dict]) -> Tuple[Dict[str, List[Tuple[
     Retorna uma tupla com:
     - Dicionário onde chave é categoria e valor é lista de tuplas (nome_jogador, quantidade)
     - Dicionário mapeando nome_jogador para URL da imagem
+    - Lista com todos os nomes únicos de jogadores
     """
     # Dados separados para goleiros e não-goleiros
     dados_por_jogador = defaultdict(lambda: defaultdict(int))
@@ -119,6 +120,9 @@ def extrair_awards_jogadores(players: List[Dict]) -> Tuple[Dict[str, List[Tuple[
     
     # Mapeamento de nome do jogador para URL da imagem
     imagens_jogadores = {}
+    
+    # Lista de todos os nomes únicos de jogadores
+    nomes_todos_jogadores = set()
     
     # Campos de estatísticas gerais (todos os jogadores)
     campos_estatisticas_gerais = [
@@ -156,6 +160,9 @@ def extrair_awards_jogadores(players: List[Dict]) -> Tuple[Dict[str, List[Tuple[
     for player in players:
         # Normaliza o nome removendo espaços extras no início/fim
         nome = player.get('fullName', 'Sem nome').strip()
+        if nome and nome != 'Sem nome':
+            nomes_todos_jogadores.add(nome)
+        
         position = player.get('position', '').lower()
         is_goleiro = 'goleiro' in position
         
@@ -276,7 +283,10 @@ def extrair_awards_jogadores(players: List[Dict]) -> Tuple[Dict[str, List[Tuple[
     for categoria in categorias:
         categorias[categoria].sort(key=chave_ordenacao, reverse=True)
     
-    return categorias, imagens_jogadores
+    # Converte set para lista ordenada
+    nomes_todos_jogadores_lista = sorted(list(nomes_todos_jogadores))
+    
+    return categorias, imagens_jogadores, nomes_todos_jogadores_lista
 
 
 def obter_dados_jogador(nome_jogador: str, categorias: Dict[str, List[Tuple[str, int]]], imagens_jogadores: Dict[str, str]) -> Dict:
@@ -446,7 +456,7 @@ def comparar_com_jogador_futebol(stats: Dict[str, int]) -> Dict:
     return melhor_match
 
 
-def gerar_ranking_html(categorias: Dict[str, List[Tuple[str, int]]], imagens_jogadores: Dict[str, str]) -> str:
+def gerar_ranking_html(categorias: Dict[str, List[Tuple[str, int]]], imagens_jogadores: Dict[str, str], nomes_todos_jogadores: List[str]) -> str:
     """
     Gera HTML visual com o ranking top 3 de cada categoria.
     Exibe todos os rankings em um grid responsivo.
@@ -1873,6 +1883,184 @@ def gerar_ranking_html(categorias: Dict[str, List[Tuple[str, int]]], imagens_jog
             cursor: not-allowed;
         }
         
+        .btn-nao-sei-nome {
+            width: 100%;
+            padding: 12px;
+            font-size: clamp(0.9rem, 2.2vw, 1rem);
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.9);
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+            margin-bottom: 12px;
+        }
+        
+        .btn-nao-sei-nome:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+        
+        .btn-nao-sei-nome:active {
+            transform: translateY(0);
+        }
+        
+        /* Modal de Jogadores */
+        .modal-jogadores {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            z-index: 10000;
+            animation: fadeIn 0.3s ease;
+            overflow-y: auto;
+        }
+        
+        .modal-jogadores.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .modal-content {
+            background: linear-gradient(135deg, #1d1b4c, #3b0764);
+            border-radius: 20px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 80vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            animation: scaleIn 0.3s ease;
+            overflow: hidden;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 24px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .modal-header h2 {
+            font-size: clamp(1.5rem, 4vw, 2rem);
+            font-weight: 700;
+            color: #ffffff;
+            margin: 0;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+        }
+        
+        .modal-close {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: #ffffff;
+            font-size: 2rem;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            line-height: 1;
+        }
+        
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: rotate(90deg);
+        }
+        
+        .modal-body {
+            padding: 24px;
+            overflow-y: auto;
+            flex: 1;
+        }
+        
+        .modal-busca {
+            width: 100%;
+            padding: 12px 16px;
+            font-size: 1rem;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            margin-bottom: 16px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            color: #ffffff;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .modal-busca::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .modal-busca:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.6);
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .modal-lista {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 12px;
+            max-height: 50vh;
+            overflow-y: auto;
+        }
+        
+        .modal-item {
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            color: #ffffff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+        
+        .modal-item:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+        
+        .modal-item:active {
+            transform: translateY(0);
+        }
+        
+        @media (max-width: 768px) {
+            .modal-content {
+                max-width: 90vw;
+                max-height: 90vh;
+            }
+            
+            .modal-lista {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+                gap: 10px;
+            }
+            
+            .modal-item {
+                padding: 10px 12px;
+                font-size: 0.9rem;
+            }
+        }
+        
         /* Retrospectiva */
         .retrospectiva-slide {
             min-width: 100vw;
@@ -2584,8 +2772,25 @@ def gerar_ranking_html(categorias: Dict[str, List[Tuple[str, int]]], imagens_jog
             <h1>Ranking Galático</h1>
             <p>Descubra sua jornada e compare-se com os grandes do futebol</p>
             <input type="text" id="input-nome-jogador" class="input-nome" placeholder="Digite seu nome completo (opcional)" autocomplete="off">
+            <button class="btn-nao-sei-nome" onclick="abrirModalJogadores()">Não sei meu nome no app</button>
             <button class="btn-iniciar" onclick="iniciarRetrospectiva()">Iniciar Minha Jornada</button>
             <p style="margin-top: 20px; font-size: 0.9em; color: rgba(255, 255, 255, 0.8); text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);">Ou pressione Enter para ver o ranking geral</p>
+        </div>
+    </div>
+    
+    <!-- Modal de Lista de Jogadores -->
+    <div class="modal-jogadores" id="modal-jogadores" onclick="fecharModalJogadores(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h2>Lista de Jogadores</h2>
+                <button class="modal-close" onclick="fecharModalJogadores()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input type="text" id="modal-busca" class="modal-busca" placeholder="Buscar jogador..." onkeyup="filtrarJogadores()">
+                <div class="modal-lista" id="modal-lista">
+                    <!-- Lista será populada via JavaScript -->
+                </div>
+            </div>
         </div>
     </div>
     
@@ -2751,6 +2956,9 @@ def gerar_ranking_html(categorias: Dict[str, List[Tuple[str, int]]], imagens_jog
     categorias_json = json_module.dumps(categorias_para_json)
     imagens_json = json_module.dumps(imagens_jogadores)
     
+    # Prepara lista de nomes de jogadores para o modal
+    nomes_jogadores_json = json_module.dumps(nomes_todos_jogadores)
+    
     # Lê variáveis de ambiente para API OpenAI
     openai_api_key = os.getenv('OPENAI_API_KEY', 'null')
     openai_model = os.getenv('OPENAI_MODEL', 'gpt-3.5-turbo')
@@ -2777,6 +2985,7 @@ def gerar_ranking_html(categorias: Dict[str, List[Tuple[str, int]]], imagens_jog
         const categoriasData = {categorias_json};
         const imagensJogadores = {imagens_json};
         const totalSlidesRanking = {total_slides};
+        const nomesJogadores = {nomes_jogadores_json};
         
         // Elementos DOM
         const telaInicial = document.getElementById('tela-inicial');
@@ -2785,6 +2994,57 @@ def gerar_ranking_html(categorias: Dict[str, List[Tuple[str, int]]], imagens_jog
         const navegacao = document.getElementById('navegacao');
         const indicadorSlide = document.getElementById('indicador-slide');
         const inputNome = document.getElementById('input-nome-jogador');
+        
+        // Funções do Modal de Jogadores
+        function abrirModalJogadores() {{
+            const modal = document.getElementById('modal-jogadores');
+            const lista = document.getElementById('modal-lista');
+            
+            // Limpa a lista
+            lista.innerHTML = '';
+            
+            // Popula a lista com os nomes dos jogadores
+            nomesJogadores.forEach(nome => {{
+                const item = document.createElement('div');
+                item.className = 'modal-item';
+                item.textContent = nome;
+                item.onclick = () => {{
+                    inputNome.value = nome;
+                    fecharModalJogadores();
+                    inputNome.focus();
+                }};
+                lista.appendChild(item);
+            }});
+            
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }}
+        
+        function fecharModalJogadores(event) {{
+            if (event && event.target && event.target.id !== 'modal-jogadores') {{
+                return;
+            }}
+            const modal = document.getElementById('modal-jogadores');
+            modal.classList.remove('active');
+            document.body.style.overflow = '';
+            // Limpa o campo de busca
+            const busca = document.getElementById('modal-busca');
+            if (busca) busca.value = '';
+        }}
+        
+        function filtrarJogadores() {{
+            const busca = document.getElementById('modal-busca').value.toLowerCase();
+            const itens = document.querySelectorAll('.modal-item');
+            
+            itens.forEach(item => {{
+                const nome = item.textContent.toLowerCase();
+                if (nome.includes(busca)) {{
+                    item.style.display = '';
+                }} else {{
+                    item.style.display = 'none';
+                }}
+            }});
+        }}
         
         // Cache para backgrounds e textos gerados
         const backgroundsCache = {{}};
@@ -4094,7 +4354,7 @@ def main():
     
     # Extrai awards e estatísticas por categoria
     print("📈 Extraindo awards e estatísticas...")
-    categorias, imagens_jogadores = extrair_awards_jogadores(players)
+    categorias, imagens_jogadores, nomes_todos_jogadores = extrair_awards_jogadores(players)
     
     if not categorias:
         print("❌ Nenhum dado encontrado!")
@@ -4105,7 +4365,7 @@ def main():
     
     # Gera o HTML
     print("🎨 Gerando visualização HTML...")
-    html = gerar_ranking_html(categorias, imagens_jogadores)
+    html = gerar_ranking_html(categorias, imagens_jogadores, nomes_todos_jogadores)
     
     # Salva o arquivo HTML
     output_file = 'ranking_awards.html'
