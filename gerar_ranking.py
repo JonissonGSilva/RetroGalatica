@@ -317,9 +317,100 @@ def comparar_com_jogador_futebol(stats: Dict[str, int]) -> Dict:
     """
     Compara as estatísticas do jogador com jogadores de futebol reais.
     Retorna o jogador de futebol mais similar.
+    Detecta se é goleiro e usa apenas goleiros renomados para comparação.
     """
-    # Jogadores de futebol com perfis típicos
+    # Detecta se é goleiro
+    is_goleiro = (
+        'goleiro_totalGamePlayed' in stats or
+        'goleiro_totalWins' in stats or
+        stats.get('muralha', 0) > 0 or
+        (stats.get('totalGoals', 0) == 0 and stats.get('totalWins', 0) > 10)
+    )
+    
+    # Goleiros renomados
+    goleiros_futebol = {
+        'Manuel Neuer': {
+            'imagem': 'https://img.a.transfermarkt.technology/portrait/header/26399-1671435885.jpg',
+            'posicao': 'Goleiro',
+            'perfil': {
+                'goleiro_totalWins': 500,
+                'goleiro_totalGamePlayed': 700,
+                'muralha': 200,
+                'xerifao': 30
+            },
+            'descricao': 'Goleiro moderno, líder da defesa e saída de bola'
+        },
+        'Alisson Becker': {
+            'imagem': 'https://img.a.transfermarkt.technology/portrait/header/121722-1671435885.jpg',
+            'posicao': 'Goleiro',
+            'perfil': {
+                'goleiro_totalWins': 400,
+                'goleiro_totalGamePlayed': 600,
+                'muralha': 180,
+                'xerifao': 25
+            },
+            'descricao': 'Goleiro seguro, decisivo em momentos importantes'
+        },
+        'Thibaut Courtois': {
+            'imagem': 'https://img.a.transfermarkt.technology/portrait/header/59266-1671435885.jpg',
+            'posicao': 'Goleiro',
+            'perfil': {
+                'goleiro_totalWins': 450,
+                'goleiro_totalGamePlayed': 650,
+                'muralha': 190,
+                'xerifao': 20
+            },
+            'descricao': 'Gigante do gol, presença imponente na área'
+        },
+        'Ederson': {
+            'imagem': 'https://img.a.transfermarkt.technology/portrait/header/238223-1671435885.jpg',
+            'posicao': 'Goleiro',
+            'perfil': {
+                'goleiro_totalWins': 380,
+                'goleiro_totalGamePlayed': 550,
+                'muralha': 160,
+                'xerifao': 35
+            },
+            'descricao': 'Goleiro com técnica apurada, excelente com os pés'
+        },
+        'Marc-André ter Stegen': {
+            'imagem': 'https://img.a.transfermarkt.technology/portrait/header/74874-1671435885.jpg',
+            'posicao': 'Goleiro',
+            'perfil': {
+                'goleiro_totalWins': 420,
+                'goleiro_totalGamePlayed': 600,
+                'muralha': 170,
+                'xerifao': 28
+            },
+            'descricao': 'Goleiro técnico, reflexos rápidos e precisão'
+        },
+        'Gianluigi Donnarumma': {
+            'imagem': 'https://img.a.transfermarkt.technology/portrait/header/192485-1671435885.jpg',
+            'posicao': 'Goleiro',
+            'perfil': {
+                'goleiro_totalWins': 300,
+                'goleiro_totalGamePlayed': 450,
+                'muralha': 140,
+                'xerifao': 22
+            },
+            'descricao': 'Jovem promessa, já consolidado como grande goleiro'
+        },
+        'Jan Oblak': {
+            'imagem': 'https://img.a.transfermarkt.technology/portrait/header/126665-1671435885.jpg',
+            'posicao': 'Goleiro',
+            'perfil': {
+                'goleiro_totalWins': 400,
+                'goleiro_totalGamePlayed': 580,
+                'muralha': 185,
+                'xerifao': 18
+            },
+            'descricao': 'Muralha eslovena, um dos melhores do mundo'
+        }
+    }
+    
+    # Jogadores de campo com perfis diversos
     jogadores_futebol = {
+        # Atacantes
         'Cristiano Ronaldo': {
             'imagem': 'https://img.a.transfermarkt.technology/portrait/header/8198-1671435885.jpg',
             'posicao': 'Atacante',
@@ -345,6 +436,55 @@ def comparar_com_jogador_futebol(stats: Dict[str, int]) -> Dict:
             },
             'descricao': 'Mestre das assistências e gols, criatividade única'
         },
+        'Kylian Mbappé': {
+            'imagem': 'https://img.a.transfermarkt.technology/portrait/header/342229-1671435885.jpg',
+            'posicao': 'Atacante',
+            'perfil': {
+                'totalGoals': 300,
+                'totalAssistence': 150,
+                'totalWins': 350,
+                'artilheiro': 30,
+                'craque': 25
+            },
+            'descricao': 'Velocidade, gols e impacto decisivo'
+        },
+        'Erling Haaland': {
+            'imagem': 'https://img.a.transfermarkt.technology/portrait/header/418560-1671435885.jpg',
+            'posicao': 'Atacante',
+            'perfil': {
+                'totalGoals': 200,
+                'totalAssistence': 50,
+                'totalWins': 250,
+                'artilheiro': 35,
+                'craque': 20
+            },
+            'descricao': 'Matador nato, instinto goleador incomparável'
+        },
+        'Robert Lewandowski': {
+            'imagem': 'https://img.a.transfermarkt.technology/portrait/header/38253-1671435885.jpg',
+            'posicao': 'Atacante',
+            'perfil': {
+                'totalGoals': 600,
+                'totalAssistence': 120,
+                'totalWins': 500,
+                'artilheiro': 40,
+                'craque': 28
+            },
+            'descricao': 'Artilheiro completo, finalização precisa e poderosa'
+        },
+        'Karim Benzema': {
+            'imagem': 'https://img.a.transfermarkt.technology/portrait/header/18922-1671435885.jpg',
+            'posicao': 'Atacante',
+            'perfil': {
+                'totalGoals': 450,
+                'totalAssistence': 180,
+                'totalWins': 550,
+                'artilheiro': 35,
+                'craque': 32,
+                'garcom': 15
+            },
+            'descricao': 'Atacante completo, técnica refinada e visão de jogo'
+        },
         'Neymar Jr': {
             'imagem': 'https://img.a.transfermarkt.technology/portrait/header/68290-1671435885.jpg',
             'posicao': 'Atacante',
@@ -358,6 +498,19 @@ def comparar_com_jogador_futebol(stats: Dict[str, int]) -> Dict:
             },
             'descricao': 'Drible, velocidade e assistências decisivas'
         },
+        'Mohamed Salah': {
+            'imagem': 'https://img.a.transfermarkt.technology/portrait/header/148455-1671435885.jpg',
+            'posicao': 'Atacante',
+            'perfil': {
+                'totalGoals': 350,
+                'totalAssistence': 140,
+                'totalWins': 450,
+                'artilheiro': 28,
+                'craque': 30
+            },
+            'descricao': 'Velocidade e finalização, sempre decisivo'
+        },
+        # Meias
         'Kevin De Bruyne': {
             'imagem': 'https://img.a.transfermarkt.technology/portrait/header/88755-1671435885.jpg',
             'posicao': 'Meia',
@@ -369,26 +522,6 @@ def comparar_com_jogador_futebol(stats: Dict[str, int]) -> Dict:
                 'craque': 45
             },
             'descricao': 'Maestro do meio-campo, rei das assistências'
-        },
-        'Manuel Neuer': {
-            'imagem': 'https://img.a.transfermarkt.technology/portrait/header/26399-1671435885.jpg',
-            'posicao': 'Goleiro',
-            'perfil': {
-                'totalWins': 500,
-                'muralha': 200,
-                'xerifao': 30
-            },
-            'descricao': 'Goleiro moderno, líder da defesa'
-        },
-        'Virgil van Dijk': {
-            'imagem': 'https://img.a.transfermarkt.technology/portrait/header/5925-1671435885.jpg',
-            'posicao': 'Zagueiro',
-            'perfil': {
-                'totalWins': 400,
-                'muralha': 150,
-                'xerifao': 40
-            },
-            'descricao': 'Muralha defensiva, líder da zaga'
         },
         'Luka Modrić': {
             'imagem': 'https://img.a.transfermarkt.technology/portrait/header/30972-1671435885.jpg',
@@ -402,25 +535,116 @@ def comparar_com_jogador_futebol(stats: Dict[str, int]) -> Dict:
             },
             'descricao': 'Meia completo, controle de jogo e visão'
         },
-        'Kylian Mbappé': {
-            'imagem': 'https://img.a.transfermarkt.technology/portrait/header/342229-1671435885.jpg',
-            'posicao': 'Atacante',
+        'Bruno Fernandes': {
+            'imagem': 'https://img.a.transfermarkt.technology/portrait/header/141660-1671435885.jpg',
+            'posicao': 'Meia',
             'perfil': {
-                'totalGoals': 300,
-                'totalAssistence': 150,
+                'totalGoals': 120,
+                'totalAssistence': 180,
                 'totalWins': 350,
-                'artilheiro': 30,
+                'garcom': 40,
+                'craque': 35
+            },
+            'descricao': 'Criativo e decisivo, sempre presente no ataque'
+        },
+        'Toni Kroos': {
+            'imagem': 'https://img.a.transfermarkt.technology/portrait/header/35257-1671435885.jpg',
+            'posicao': 'Meia',
+            'perfil': {
+                'totalGoals': 80,
+                'totalAssistence': 150,
+                'totalWins': 500,
+                'garcom': 35,
+                'craque': 40
+            },
+            'descricao': 'Distribuidor de jogo, precisão e controle'
+        },
+        'Frenkie de Jong': {
+            'imagem': 'https://img.a.transfermarkt.technology/portrait/header/326030-1671435885.jpg',
+            'posicao': 'Meia',
+            'perfil': {
+                'totalGoals': 50,
+                'totalAssistence': 120,
+                'totalWins': 300,
+                'garcom': 30,
                 'craque': 25
             },
-            'descricao': 'Velocidade, gols e impacto decisivo'
+            'descricao': 'Meia moderno, condução de bola e visão'
+        },
+        'Jude Bellingham': {
+            'imagem': 'https://img.a.transfermarkt.technology/portrait/header/581678-1671435885.jpg',
+            'posicao': 'Meia',
+            'perfil': {
+                'totalGoals': 60,
+                'totalAssistence': 80,
+                'totalWins': 200,
+                'garcom': 20,
+                'craque': 30
+            },
+            'descricao': 'Jovem talento, versatilidade e impacto'
+        },
+        # Zagueiros
+        'Virgil van Dijk': {
+            'imagem': 'https://img.a.transfermarkt.technology/portrait/header/5925-1671435885.jpg',
+            'posicao': 'Zagueiro',
+            'perfil': {
+                'totalWins': 400,
+                'muralha': 150,
+                'xerifao': 40
+            },
+            'descricao': 'Muralha defensiva, líder da zaga'
+        },
+        'Rúben Dias': {
+            'imagem': 'https://img.a.transfermarkt.technology/portrait/header/340621-1671435885.jpg',
+            'posicao': 'Zagueiro',
+            'perfil': {
+                'totalWins': 350,
+                'muralha': 130,
+                'xerifao': 35
+            },
+            'descricao': 'Zagueiro sólido, leitura de jogo excepcional'
+        },
+        'Sergio Ramos': {
+            'imagem': 'https://img.a.transfermarkt.technology/portrait/header/25557-1671435885.jpg',
+            'posicao': 'Zagueiro',
+            'perfil': {
+                'totalGoals': 100,
+                'totalWins': 500,
+                'muralha': 140,
+                'xerifao': 50
+            },
+            'descricao': 'Líder nato, zagueiro goleador e experiente'
+        },
+        'Marquinhos': {
+            'imagem': 'https://img.a.transfermarkt.technology/portrait/header/183712-1671435885.jpg',
+            'posicao': 'Zagueiro',
+            'perfil': {
+                'totalWins': 400,
+                'muralha': 120,
+                'xerifao': 30
+            },
+            'descricao': 'Versátil e técnico, presença constante'
+        },
+        'Raphaël Varane': {
+            'imagem': 'https://img.a.transfermarkt.technology/portrait/header/164770-1671435885.jpg',
+            'posicao': 'Zagueiro',
+            'perfil': {
+                'totalWins': 450,
+                'muralha': 110,
+                'xerifao': 25
+            },
+            'descricao': 'Velocidade e segurança, defensor completo'
         }
     }
+    
+    # Seleciona o grupo de jogadores baseado no tipo
+    grupo_jogadores = goleiros_futebol if is_goleiro else jogadores_futebol
     
     # Calcula similaridade com cada jogador
     melhor_match = None
     melhor_score = 0
     
-    for nome_jogador, perfil in jogadores_futebol.items():
+    for nome_jogador, perfil in grupo_jogadores.items():
         score = 0
         matches = 0
         
@@ -445,18 +669,27 @@ def comparar_com_jogador_futebol(stats: Dict[str, int]) -> Dict:
     
     # Se não encontrou match bom, usa um padrão baseado nas estatísticas principais
     if melhor_match is None or melhor_score < 0.3:
-        if stats.get('totalGoals', 0) > stats.get('totalAssistence', 0) * 2:
+        if is_goleiro:
+            # Padrão para goleiros
+            melhor_match = goleiros_futebol['Manuel Neuer']
+            melhor_match['nome'] = 'Manuel Neuer'
+            melhor_match['similaridade'] = 0.5
+        elif stats.get('totalGoals', 0) > stats.get('totalAssistence', 0) * 2:
             melhor_match = jogadores_futebol['Cristiano Ronaldo']
             melhor_match['nome'] = 'Cristiano Ronaldo'
+            melhor_match['similaridade'] = 0.5
         elif stats.get('totalAssistence', 0) > stats.get('totalGoals', 0) * 1.5:
             melhor_match = jogadores_futebol['Kevin De Bruyne']
             melhor_match['nome'] = 'Kevin De Bruyne'
-        elif 'goleiro' in str(stats.keys()):
-            melhor_match = jogadores_futebol['Manuel Neuer']
-            melhor_match['nome'] = 'Manuel Neuer'
+            melhor_match['similaridade'] = 0.5
+        elif stats.get('muralha', 0) > 0 or stats.get('xerifao', 0) > 0:
+            melhor_match = jogadores_futebol['Virgil van Dijk']
+            melhor_match['nome'] = 'Virgil van Dijk'
+            melhor_match['similaridade'] = 0.5
         else:
             melhor_match = jogadores_futebol['Luka Modrić']
             melhor_match['nome'] = 'Luka Modrić'
+            melhor_match['similaridade'] = 0.5
     
     return melhor_match
 
@@ -3564,6 +3797,61 @@ def gerar_ranking_html(categorias: Dict[str, List[Tuple[str, int]]], imagens_jog
         
         // Função para comparar com jogador de futebol
         function compararComJogadorFutebol(stats) {{
+            // Detecta se é goleiro
+            const isGoleiro = (
+                'goleiro_totalGamePlayed' in stats ||
+                'goleiro_totalWins' in stats ||
+                (stats.muralha || 0) > 0 ||
+                ((stats.totalGoals || 0) === 0 && (stats.totalWins || 0) > 10)
+            );
+            
+            // Goleiros renomados
+            const goleirosFutebol = {{
+                'Manuel Neuer': {{
+                    imagem: 'https://img.a.transfermarkt.technology/portrait/header/26399-1671435885.jpg',
+                    posicao: 'Goleiro',
+                    perfil: {{ goleiro_totalWins: 500, goleiro_totalGamePlayed: 700, muralha: 200, xerifao: 30 }},
+                    descricao: 'Goleiro moderno, líder da defesa e saída de bola'
+                }},
+                'Alisson Becker': {{
+                    imagem: 'https://img.a.transfermarkt.technology/portrait/header/121722-1671435885.jpg',
+                    posicao: 'Goleiro',
+                    perfil: {{ goleiro_totalWins: 400, goleiro_totalGamePlayed: 600, muralha: 180, xerifao: 25 }},
+                    descricao: 'Goleiro seguro, decisivo em momentos importantes'
+                }},
+                'Thibaut Courtois': {{
+                    imagem: 'https://img.a.transfermarkt.technology/portrait/header/59266-1671435885.jpg',
+                    posicao: 'Goleiro',
+                    perfil: {{ goleiro_totalWins: 450, goleiro_totalGamePlayed: 650, muralha: 190, xerifao: 20 }},
+                    descricao: 'Gigante do gol, presença imponente na área'
+                }},
+                'Ederson': {{
+                    imagem: 'https://img.a.transfermarkt.technology/portrait/header/238223-1671435885.jpg',
+                    posicao: 'Goleiro',
+                    perfil: {{ goleiro_totalWins: 380, goleiro_totalGamePlayed: 550, muralha: 160, xerifao: 35 }},
+                    descricao: 'Goleiro com técnica apurada, excelente com os pés'
+                }},
+                'Marc-André ter Stegen': {{
+                    imagem: 'https://img.a.transfermarkt.technology/portrait/header/74874-1671435885.jpg',
+                    posicao: 'Goleiro',
+                    perfil: {{ goleiro_totalWins: 420, goleiro_totalGamePlayed: 600, muralha: 170, xerifao: 28 }},
+                    descricao: 'Goleiro técnico, reflexos rápidos e precisão'
+                }},
+                'Gianluigi Donnarumma': {{
+                    imagem: 'https://img.a.transfermarkt.technology/portrait/header/192485-1671435885.jpg',
+                    posicao: 'Goleiro',
+                    perfil: {{ goleiro_totalWins: 300, goleiro_totalGamePlayed: 450, muralha: 140, xerifao: 22 }},
+                    descricao: 'Jovem promessa, já consolidado como grande goleiro'
+                }},
+                'Jan Oblak': {{
+                    imagem: 'https://img.a.transfermarkt.technology/portrait/header/126665-1671435885.jpg',
+                    posicao: 'Goleiro',
+                    perfil: {{ goleiro_totalWins: 400, goleiro_totalGamePlayed: 580, muralha: 185, xerifao: 18 }},
+                    descricao: 'Muralha eslovena, um dos melhores do mundo'
+                }}
+            }};
+            
+            // Jogadores de campo com perfis diversos
             const jogadoresFutebol = {{
                 'Cristiano Ronaldo': {{
                     imagem: 'https://img.a.transfermarkt.technology/portrait/header/8198-1671435885.jpg',
@@ -3606,13 +3894,88 @@ def gerar_ranking_html(categorias: Dict[str, List[Tuple[str, int]]], imagens_jog
                     posicao: 'Atacante',
                     perfil: {{ totalGoals: 300, totalAssistence: 150, totalWins: 350, artilheiro: 30, craque: 25 }},
                     descricao: 'Velocidade, gols e impacto decisivo'
+                }},
+                'Erling Haaland': {{
+                    imagem: 'https://img.a.transfermarkt.technology/portrait/header/418560-1671435885.jpg',
+                    posicao: 'Atacante',
+                    perfil: {{ totalGoals: 200, totalAssistence: 50, totalWins: 250, artilheiro: 35, craque: 20 }},
+                    descricao: 'Matador nato, instinto goleador incomparável'
+                }},
+                'Robert Lewandowski': {{
+                    imagem: 'https://img.a.transfermarkt.technology/portrait/header/38253-1671435885.jpg',
+                    posicao: 'Atacante',
+                    perfil: {{ totalGoals: 600, totalAssistence: 120, totalWins: 500, artilheiro: 40, craque: 28 }},
+                    descricao: 'Artilheiro completo, finalização precisa e poderosa'
+                }},
+                'Karim Benzema': {{
+                    imagem: 'https://img.a.transfermarkt.technology/portrait/header/18922-1671435885.jpg',
+                    posicao: 'Atacante',
+                    perfil: {{ totalGoals: 450, totalAssistence: 180, totalWins: 550, artilheiro: 35, craque: 32, garcom: 15 }},
+                    descricao: 'Atacante completo, técnica refinada e visão de jogo'
+                }},
+                'Mohamed Salah': {{
+                    imagem: 'https://img.a.transfermarkt.technology/portrait/header/148455-1671435885.jpg',
+                    posicao: 'Atacante',
+                    perfil: {{ totalGoals: 350, totalAssistence: 140, totalWins: 450, artilheiro: 28, craque: 30 }},
+                    descricao: 'Velocidade e finalização, sempre decisivo'
+                }},
+                'Bruno Fernandes': {{
+                    imagem: 'https://img.a.transfermarkt.technology/portrait/header/141660-1671435885.jpg',
+                    posicao: 'Meia',
+                    perfil: {{ totalGoals: 120, totalAssistence: 180, totalWins: 350, garcom: 40, craque: 35 }},
+                    descricao: 'Criativo e decisivo, sempre presente no ataque'
+                }},
+                'Toni Kroos': {{
+                    imagem: 'https://img.a.transfermarkt.technology/portrait/header/35257-1671435885.jpg',
+                    posicao: 'Meia',
+                    perfil: {{ totalGoals: 80, totalAssistence: 150, totalWins: 500, garcom: 35, craque: 40 }},
+                    descricao: 'Distribuidor de jogo, precisão e controle'
+                }},
+                'Frenkie de Jong': {{
+                    imagem: 'https://img.a.transfermarkt.technology/portrait/header/326030-1671435885.jpg',
+                    posicao: 'Meia',
+                    perfil: {{ totalGoals: 50, totalAssistence: 120, totalWins: 300, garcom: 30, craque: 25 }},
+                    descricao: 'Meia moderno, condução de bola e visão'
+                }},
+                'Jude Bellingham': {{
+                    imagem: 'https://img.a.transfermarkt.technology/portrait/header/581678-1671435885.jpg',
+                    posicao: 'Meia',
+                    perfil: {{ totalGoals: 60, totalAssistence: 80, totalWins: 200, garcom: 20, craque: 30 }},
+                    descricao: 'Jovem talento, versatilidade e impacto'
+                }},
+                'Rúben Dias': {{
+                    imagem: 'https://img.a.transfermarkt.technology/portrait/header/340621-1671435885.jpg',
+                    posicao: 'Zagueiro',
+                    perfil: {{ totalWins: 350, muralha: 130, xerifao: 35 }},
+                    descricao: 'Zagueiro sólido, leitura de jogo excepcional'
+                }},
+                'Sergio Ramos': {{
+                    imagem: 'https://img.a.transfermarkt.technology/portrait/header/25557-1671435885.jpg',
+                    posicao: 'Zagueiro',
+                    perfil: {{ totalGoals: 100, totalWins: 500, muralha: 140, xerifao: 50 }},
+                    descricao: 'Líder nato, zagueiro goleador e experiente'
+                }},
+                'Marquinhos': {{
+                    imagem: 'https://img.a.transfermarkt.technology/portrait/header/183712-1671435885.jpg',
+                    posicao: 'Zagueiro',
+                    perfil: {{ totalWins: 400, muralha: 120, xerifao: 30 }},
+                    descricao: 'Versátil e técnico, presença constante'
+                }},
+                'Raphaël Varane': {{
+                    imagem: 'https://img.a.transfermarkt.technology/portrait/header/164770-1671435885.jpg',
+                    posicao: 'Zagueiro',
+                    perfil: {{ totalWins: 450, muralha: 110, xerifao: 25 }},
+                    descricao: 'Velocidade e segurança, defensor completo'
                 }}
             }};
+            
+            // Seleciona o grupo de jogadores baseado no tipo
+            const grupoJogadores = isGoleiro ? goleirosFutebol : jogadoresFutebol;
             
             let melhorMatch = null;
             let melhorScore = 0;
             
-            for (const [nomeJogador, perfil] of Object.entries(jogadoresFutebol)) {{
+            for (const [nomeJogador, perfil] of Object.entries(grupoJogadores)) {{
                 let score = 0;
                 let matches = 0;
                 
@@ -3643,10 +4006,14 @@ def gerar_ranking_html(categorias: Dict[str, List[Tuple[str, int]]], imagens_jog
             }}
             
             if (!melhorMatch || melhorScore < 0.3) {{
-                if ((stats.totalGoals || 0) > (stats.totalAssistence || 0) * 2) {{
+                if (isGoleiro) {{
+                    melhorMatch = {{ ...goleirosFutebol['Manuel Neuer'], nome: 'Manuel Neuer', similaridade: 0.5 }};
+                }} else if ((stats.totalGoals || 0) > (stats.totalAssistence || 0) * 2) {{
                     melhorMatch = {{ ...jogadoresFutebol['Cristiano Ronaldo'], nome: 'Cristiano Ronaldo', similaridade: 0.5 }};
                 }} else if ((stats.totalAssistence || 0) > (stats.totalGoals || 0) * 1.5) {{
                     melhorMatch = {{ ...jogadoresFutebol['Kevin De Bruyne'], nome: 'Kevin De Bruyne', similaridade: 0.5 }};
+                }} else if (stats.muralha || stats.xerifao) {{
+                    melhorMatch = {{ ...jogadoresFutebol['Virgil van Dijk'], nome: 'Virgil van Dijk', similaridade: 0.5 }};
                 }} else {{
                     melhorMatch = {{ ...jogadoresFutebol['Luka Modrić'], nome: 'Luka Modrić', similaridade: 0.5 }};
                 }}
