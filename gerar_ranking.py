@@ -764,6 +764,7 @@ def gerar_ranking_html(categorias: Dict[str, List[Tuple[str, int]]], imagens_jog
             background: radial-gradient(circle at top left, #f97316 0%, transparent 55%), 
                         radial-gradient(circle at bottom right, #22c55e 0%, transparent 55%),
                         linear-gradient(135deg, #1d1b4c, #3b0764);
+            overflow: hidden;
         }
         
         .slide.active {
@@ -801,23 +802,29 @@ def gerar_ranking_html(categorias: Dict[str, List[Tuple[str, int]]], imagens_jog
         .slide-content {
             max-width: 420px;
             width: 100%;
-            padding: 28px 24px 30px;
+            padding: 20px 20px 24px;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
+            justify-content: center;
             align-items: stretch;
             text-align: center;
             color: #f9fafb;
             position: relative;
             z-index: 1;
+            box-sizing: border-box;
+            overflow: visible;
+            min-height: 0;
+            max-height: calc(100vh - 40px);
+            margin: auto;
         }
         
         .slide-header {
             text-align: center;
-            margin-bottom: 18px;
+            margin-bottom: 12px;
             padding-bottom: 0;
             border-bottom: none;
             animation: fadeInUp 0.8s ease 0.2s both;
+            flex-shrink: 0;
         }
         
         .categoria-header {
@@ -843,11 +850,12 @@ def gerar_ranking_html(categorias: Dict[str, List[Tuple[str, int]]], imagens_jog
         }
         
         .story-subtitle {
-            font-size: clamp(1rem, 2.5vw, 1.3rem);
+            font-size: clamp(0.85rem, 2vw, 1.1rem);
             font-weight: 600;
             color: rgba(255, 255, 255, 0.95);
-            margin-bottom: 12px;
+            margin-bottom: 8px;
             text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+            line-height: 1.2;
         }
         
         .story-body {
@@ -859,11 +867,13 @@ def gerar_ranking_html(categorias: Dict[str, List[Tuple[str, int]]], imagens_jog
         }
         
         .categoria-titulo {
-            font-size: clamp(2.4rem, 6vw, 3.5rem);
+            font-size: clamp(1.8rem, 5vw, 2.8rem);
             font-weight: 900;
             color: #ffffff;
             letter-spacing: -0.03em;
             text-shadow: 0 4px 16px rgba(0, 0, 0, 0.6), 0 2px 8px rgba(0, 0, 0, 0.4);
+            line-height: 1.1;
+            margin-bottom: 4px;
         }
         
         /* Ranking simples dentro do story */
@@ -872,9 +882,10 @@ def gerar_ranking_html(categorias: Dict[str, List[Tuple[str, int]]], imagens_jog
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            margin-top: 12px;
-            margin-bottom: 8px;
-            gap: 10px;
+            margin-top: 8px;
+            margin-bottom: 6px;
+            gap: 8px;
+            flex-shrink: 0;
         }
         
         .ranking-highlight-visual {
@@ -884,78 +895,97 @@ def gerar_ranking_html(categorias: Dict[str, List[Tuple[str, int]]], imagens_jog
         }
         
         .ranking-highlight-image {
-            width: 120px;
-            height: 120px;
-            border-radius: 24px;
+            width: clamp(80px, 20vw, 100px);
+            height: clamp(80px, 20vw, 100px);
+            border-radius: 20px;
             object-fit: cover;
-            border: 4px solid rgba(255, 255, 255, 0.9);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border: 3px solid rgba(255, 255, 255, 0.9);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
             display: block;
+            flex-shrink: 0;
         }
         
         .ranking-highlight-placeholder {
-            width: 120px;
-            height: 120px;
-            border-radius: 24px;
-            border: 4px solid rgba(255, 255, 255, 0.9);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            width: clamp(80px, 20vw, 100px);
+            height: clamp(80px, 20vw, 100px);
+            border-radius: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.9);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
             background: linear-gradient(135deg, #22c55e, #16a34a);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 3rem;
+            font-size: clamp(2rem, 5vw, 2.5rem);
             font-weight: 900;
             color: #f9fafb;
+            flex-shrink: 0;
         }
         
         .ranking-highlight-text {
             text-align: center;
-            max-width: 80vw;
+            max-width: 100%;
+            width: 100%;
+            padding: 0 4px;
+            box-sizing: border-box;
         }
         
         .ranking-highlight-name {
-            font-size: clamp(1.3rem, 3vw, 1.6rem);
+            font-size: clamp(1.1rem, 2.8vw, 1.4rem);
             font-weight: 800;
-            margin-bottom: 6px;
+            margin-bottom: 4px;
             color: #ffffff;
             text-shadow: 0 3px 12px rgba(0, 0, 0, 0.6), 0 1px 4px rgba(0, 0, 0, 0.4);
+            line-height: 1.2;
         }
         
         .ranking-highlight-phrase {
-            font-size: clamp(0.95rem, 2.2vw, 1.15rem);
+            font-size: clamp(0.85rem, 2vw, 1rem);
             font-weight: 500;
             color: rgba(255, 255, 255, 0.98);
             text-shadow: 0 2px 10px rgba(0, 0, 0, 0.6), 0 1px 4px rgba(0, 0, 0, 0.4);
-            line-height: 1.4;
+            line-height: 1.3;
+            padding: 0 2px;
         }
         
         .ranking-simple-list {
-            margin-top: 14px;
+            margin-top: 8px;
+            flex-shrink: 0;
+            width: 100%;
         }
         
         .ranking-simple-row {
             display: flex;
             justify-content: space-between;
-            align-items: baseline;
-            padding: 8px 0;
-            font-size: clamp(0.95rem, 2.2vw, 1.1rem);
+            align-items: center;
+            padding: 6px 0;
+            font-size: clamp(0.85rem, 2vw, 1rem);
             color: rgba(255, 255, 255, 0.98);
             text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+            min-height: 28px;
         }
         
         .ranking-simple-pos {
             font-weight: 800;
-            font-size: 1.1em;
+            font-size: 1em;
+            min-width: 32px;
+            text-align: left;
         }
         
         .ranking-simple-name {
             font-weight: 600;
-            margin: 0 8px;
+            margin: 0 6px;
+            flex: 1;
+            text-align: left;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
         
         .ranking-simple-value {
             font-weight: 700;
             opacity: 0.95;
+            min-width: 40px;
+            text-align: right;
         }
         
         .ranking-item::before {
@@ -1547,7 +1577,7 @@ def gerar_ranking_html(categorias: Dict[str, List[Tuple[str, int]]], imagens_jog
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            padding: 20px;
+            padding: 12px;
             scroll-snap-align: start;
             text-align: center;
             position: relative;
@@ -1561,145 +1591,160 @@ def gerar_ranking_html(categorias: Dict[str, List[Tuple[str, int]]], imagens_jog
         }
         
         .perfil-completo-content {
-            max-width: 85vw;
+            max-width: 90vw;
             width: 100%;
+            max-height: calc(100vh - 24px);
             animation: fadeInUp 0.8s ease;
             display: flex;
             flex-direction: column;
-            justify-content: flex-start;
+            justify-content: center;
             align-items: center;
-            padding: 20px 0;
+            padding: 8px 0;
             position: relative;
             z-index: 1;
+            overflow-y: auto;
+            box-sizing: border-box;
         }
         
         .perfil-header {
             text-align: center;
-            margin-bottom: 16px;
+            margin-bottom: 10px;
             width: 100%;
+            flex-shrink: 0;
         }
         
         .perfil-imagem-grande {
-            width: 100px;
-            height: 100px;
-            border-radius: 24px;
+            width: clamp(70px, 18vw, 85px);
+            height: clamp(70px, 18vw, 85px);
+            border-radius: 20px;
             object-fit: cover;
-            border: 3px solid rgba(255, 255, 255, 0.95);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-            margin: 0 auto 12px;
+            border: 2px solid rgba(255, 255, 255, 0.95);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+            margin: 0 auto 8px;
             display: block;
             background: linear-gradient(135deg, #22c55e, #16a34a);
+            flex-shrink: 0;
         }
         
         .perfil-nome-grande {
-            font-size: clamp(2rem, 5vw, 2.8rem);
+            font-size: clamp(1.5rem, 4vw, 2.2rem);
             font-weight: 900;
             color: #ffffff;
-            margin-bottom: 10px;
+            margin-bottom: 6px;
             text-shadow: 0 3px 14px rgba(0, 0, 0, 0.35);
             letter-spacing: -0.03em;
+            line-height: 1.1;
         }
         
         .perfil-subtitulo {
-            font-size: clamp(1rem, 2.5vw, 1.3rem);
+            font-size: clamp(0.85rem, 2vw, 1.1rem);
             font-weight: 600;
             color: rgba(255, 255, 255, 0.95);
-            margin-bottom: 16px;
+            margin-bottom: 10px;
             text-shadow: 0 3px 12px rgba(0, 0, 0, 0.5);
+            line-height: 1.2;
         }
         
         .perfil-stats-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
+            gap: 8px;
             margin-bottom: 0;
             width: 100%;
+            flex-shrink: 0;
         }
         
         .perfil-stat-card {
             background: rgba(255, 255, 255, 0.15);
             backdrop-filter: blur(10px);
-            border-radius: 16px;
-            padding: 14px 10px;
+            border-radius: 12px;
+            padding: 10px 8px;
             text-align: center;
             border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
         }
         
         .perfil-stat-numero {
-            font-size: clamp(1.6rem, 4vw, 2.2rem);
+            font-size: clamp(1.3rem, 3.5vw, 1.8rem);
             font-weight: 900;
             color: #ffffff;
-            margin-bottom: 4px;
+            margin-bottom: 2px;
             text-shadow: 0 3px 12px rgba(0, 0, 0, 0.5);
+            line-height: 1.1;
         }
         
         .perfil-stat-label {
-            font-size: clamp(0.75rem, 1.8vw, 0.95rem);
+            font-size: clamp(0.65rem, 1.6vw, 0.8rem);
             color: rgba(255, 255, 255, 0.95);
             font-weight: 600;
             text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+            line-height: 1.2;
         }
         
         .perfil-comparacao-card {
             background: rgba(255, 255, 255, 0.15);
             backdrop-filter: blur(10px);
-            border-radius: 16px;
-            padding: 14px 16px;
-            margin-top: 8px;
-            margin-bottom: 16px;
+            border-radius: 12px;
+            padding: 10px 12px;
+            margin-top: 6px;
+            margin-bottom: 10px;
             border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
             width: 100%;
+            flex-shrink: 0;
         }
         
         .perfil-comparacao-titulo {
-            font-size: clamp(0.85rem, 2vw, 1.1rem);
+            font-size: clamp(0.75rem, 1.8vw, 0.95rem);
             font-weight: 700;
             color: rgba(255, 255, 255, 0.9);
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             text-align: center;
             text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+            line-height: 1.2;
         }
         
         .perfil-comparacao-nome {
-            font-size: clamp(1.1rem, 2.8vw, 1.5rem);
+            font-size: clamp(0.95rem, 2.4vw, 1.3rem);
             font-weight: 800;
             color: #ffffff;
             text-align: center;
-            margin-bottom: 6px;
+            margin-bottom: 4px;
             text-shadow: 0 3px 12px rgba(0, 0, 0, 0.5);
+            line-height: 1.1;
         }
         
         .perfil-comparacao-desc {
-            font-size: clamp(0.8rem, 1.8vw, 1rem);
+            font-size: clamp(0.7rem, 1.6vw, 0.85rem);
             color: rgba(255, 255, 255, 0.95);
             text-align: center;
-            line-height: 1.4;
+            line-height: 1.3;
             text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
         
         .perfil-similaridade {
             text-align: center;
-            margin-top: 8px;
-            padding: 10px;
+            margin-top: 6px;
+            padding: 8px;
             background: rgba(255, 255, 255, 0.2);
-            border-radius: 12px;
+            border-radius: 10px;
         }
         
         .perfil-similaridade-valor {
-            font-size: clamp(1.5rem, 3.5vw, 2rem);
+            font-size: clamp(1.2rem, 3vw, 1.6rem);
             font-weight: 900;
             color: #ffffff;
             text-shadow: 0 3px 12px rgba(0, 0, 0, 0.5);
+            line-height: 1;
         }
         
         .perfil-similaridade-label {
-            font-size: clamp(0.7rem, 1.6vw, 0.85rem);
+            font-size: clamp(0.65rem, 1.5vw, 0.75rem);
             color: rgba(255, 255, 255, 0.9);
-            margin-top: 4px;
+            margin-top: 3px;
             text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+            line-height: 1.2;
         }
         
         /* Slides de Storytelling */
@@ -2285,20 +2330,70 @@ def gerar_ranking_html(categorias: Dict[str, List[Tuple[str, int]]], imagens_jog
             }
             
             .perfil-completo-content {
-                padding: 25px;
+                padding: 8px 0;
+                max-height: calc(100vh - 24px);
             }
             
             .perfil-nome-grande {
-                font-size: 1.8em;
+                font-size: clamp(1.5rem, 4vw, 2.2rem);
             }
         }
         
         @media (max-width: 768px) {
             .slide-content {
-                padding: 30px 20px;
+                padding: 16px 16px 20px;
                 min-height: auto;
                 grid-template-columns: 1fr;
-                gap: 30px;
+                gap: 20px;
+                max-height: 100vh;
+                overflow-y: auto;
+                justify-content: flex-start;
+            }
+            
+            .slide-header {
+                margin-bottom: 10px;
+            }
+            
+            .categoria-titulo {
+                font-size: clamp(1.5rem, 4.5vw, 2.2rem);
+                margin-bottom: 2px;
+            }
+            
+            .story-subtitle {
+                font-size: clamp(0.75rem, 1.8vw, 0.95rem);
+                margin-bottom: 6px;
+            }
+            
+            .ranking-highlight {
+                margin-top: 6px;
+                margin-bottom: 4px;
+                gap: 6px;
+            }
+            
+            .ranking-highlight-image,
+            .ranking-highlight-placeholder {
+                width: clamp(70px, 18vw, 90px);
+                height: clamp(70px, 18vw, 90px);
+            }
+            
+            .ranking-highlight-name {
+                font-size: clamp(1rem, 2.5vw, 1.2rem);
+                margin-bottom: 3px;
+            }
+            
+            .ranking-highlight-phrase {
+                font-size: clamp(0.75rem, 1.8vw, 0.9rem);
+                line-height: 1.25;
+            }
+            
+            .ranking-simple-list {
+                margin-top: 6px;
+            }
+            
+            .ranking-simple-row {
+                padding: 5px 0;
+                font-size: clamp(0.8rem, 1.9vw, 0.95rem);
+                min-height: 24px;
             }
             
             .categoria-titulo {
@@ -2493,24 +2588,84 @@ def gerar_ranking_html(categorias: Dict[str, List[Tuple[str, int]]], imagens_jog
         
         @media (max-width: 480px) {
             .slide {
-                padding: 15px 10px;
+                padding: 0;
             }
             
             .slide-content {
-                padding: 20px 15px;
-                border-radius: 12px;
+                padding: 12px 12px 16px;
+                border-radius: 0;
                 grid-template-columns: 1fr;
-                gap: 20px;
+                gap: 12px;
                 min-height: auto;
+                max-height: 100vh;
+                overflow-y: auto;
+                justify-content: flex-start;
             }
             
             .categoria-titulo {
-                font-size: 1.4em;
+                font-size: clamp(1.3rem, 4vw, 1.8rem);
+                margin-bottom: 2px;
             }
             
             .slide-header {
-                margin-bottom: 25px;
-                padding-bottom: 25px;
+                margin-bottom: 8px;
+                padding-bottom: 0;
+            }
+            
+            .story-year {
+                font-size: clamp(0.7rem, 1.4vw, 0.85rem);
+                margin-bottom: 4px;
+            }
+            
+            .story-subtitle {
+                font-size: clamp(0.7rem, 1.6vw, 0.85rem);
+                margin-bottom: 4px;
+            }
+            
+            .ranking-highlight {
+                margin-top: 4px;
+                margin-bottom: 3px;
+                gap: 5px;
+            }
+            
+            .ranking-highlight-image,
+            .ranking-highlight-placeholder {
+                width: clamp(60px, 16vw, 75px);
+                height: clamp(60px, 16vw, 75px);
+                border-radius: 16px;
+            }
+            
+            .ranking-highlight-name {
+                font-size: clamp(0.95rem, 2.2vw, 1.1rem);
+                margin-bottom: 2px;
+            }
+            
+            .ranking-highlight-phrase {
+                font-size: clamp(0.7rem, 1.6vw, 0.85rem);
+                line-height: 1.2;
+            }
+            
+            .ranking-simple-list {
+                margin-top: 4px;
+            }
+            
+            .ranking-simple-row {
+                padding: 4px 0;
+                font-size: clamp(0.75rem, 1.7vw, 0.9rem);
+                min-height: 22px;
+            }
+            
+            .ranking-simple-pos {
+                min-width: 28px;
+                font-size: 0.95em;
+            }
+            
+            .ranking-simple-name {
+                margin: 0 4px;
+            }
+            
+            .ranking-simple-value {
+                min-width: 35px;
             }
             
             .ranking-item {
@@ -2695,69 +2850,77 @@ def gerar_ranking_html(categorias: Dict[str, List[Tuple[str, int]]], imagens_jog
             }
             
             .perfil-completo-slide {
-                padding: 20px 15px;
+                padding: 10px;
             }
             
             .perfil-completo-content {
-                padding: 20px;
-                max-width: 95%;
+                padding: 6px 0;
+                max-width: 92vw;
+                max-height: calc(100vh - 20px);
             }
             
             .perfil-imagem-grande {
-                width: 90px;
-                height: 90px;
-                margin-bottom: 10px;
+                width: clamp(60px, 16vw, 75px);
+                height: clamp(60px, 16vw, 75px);
+                margin-bottom: 6px;
             }
             
             .perfil-nome-grande {
-                font-size: clamp(1.8rem, 4.5vw, 2.4rem);
+                font-size: clamp(1.3rem, 3.5vw, 1.9rem);
+                margin-bottom: 4px;
             }
             
             .perfil-subtitulo {
-                font-size: clamp(0.9rem, 2.2vw, 1.1rem);
+                font-size: clamp(0.75rem, 1.8vw, 0.95rem);
+                margin-bottom: 8px;
             }
             
             .perfil-stats-grid {
-                gap: 10px;
+                gap: 6px;
                 margin-bottom: 0;
             }
             
             .perfil-stat-card {
-                padding: 12px 8px;
+                padding: 8px 6px;
             }
             
             .perfil-stat-numero {
-                font-size: clamp(1.4rem, 3.5vw, 1.9rem);
+                font-size: clamp(1.1rem, 3vw, 1.5rem);
+                margin-bottom: 2px;
             }
             
             .perfil-stat-label {
-                font-size: clamp(0.7rem, 1.6vw, 0.85rem);
+                font-size: clamp(0.6rem, 1.4vw, 0.75rem);
             }
             
             .perfil-comparacao-card {
-                padding: 12px 14px;
-                margin-top: 6px;
-                margin-bottom: 12px;
+                padding: 8px 10px;
+                margin-top: 4px;
+                margin-bottom: 8px;
             }
             
             .perfil-comparacao-titulo {
-                font-size: clamp(0.8rem, 1.9vw, 1rem);
+                font-size: clamp(0.7rem, 1.6vw, 0.85rem);
+                margin-bottom: 4px;
             }
             
             .perfil-comparacao-nome {
-                font-size: clamp(1rem, 2.5vw, 1.3rem);
+                font-size: clamp(0.85rem, 2vw, 1.1rem);
+                margin-bottom: 3px;
             }
             
             .perfil-comparacao-desc {
-                font-size: clamp(0.75rem, 1.7vw, 0.9rem);
+                font-size: clamp(0.65rem, 1.4vw, 0.75rem);
+                margin-bottom: 4px;
             }
             
             .perfil-similaridade-valor {
-                font-size: clamp(1.3rem, 3vw, 1.7rem);
+                font-size: clamp(1rem, 2.5vw, 1.3rem);
             }
             
             .perfil-similaridade-label {
-                font-size: clamp(0.65rem, 1.5vw, 0.8rem);
+                font-size: clamp(0.6rem, 1.3vw, 0.7rem);
+                margin-top: 2px;
             }
         }
     </style>
