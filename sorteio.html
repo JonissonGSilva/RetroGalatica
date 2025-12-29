@@ -1219,21 +1219,19 @@
         }
         
         function gerarChaveamento() {
-            // Chaveamento round-robin para 5 times (10 jogos)
-            const times = ['Time A', 'Time B', 'Time C', 'Time D', 'Time E'];
-            const jogos = [];
-            let numeroJogo = 1;
-            
-            // Gera todos os confrontos possíveis
-            for (let i = 0; i < times.length; i++) {
-                for (let j = i + 1; j < times.length; j++) {
-                    jogos.push({
-                        numero: numeroJogo++,
-                        time1: times[i],
-                        time2: times[j]
-                    });
-                }
-            }
+            // Chaveamento específico para 5 times (10 jogos)
+            const jogos = [
+                { numero: 1, time1: 'Time A', time2: 'Time B' },
+                { numero: 2, time1: 'Time C', time2: 'Time D' },
+                { numero: 3, time1: 'Time A', time2: 'Time C' },
+                { numero: 4, time1: 'Time B', time2: 'Time E' },
+                { numero: 5, time1: 'Time A', time2: 'Time D' },
+                { numero: 6, time1: 'Time C', time2: 'Time E' },
+                { numero: 7, time1: 'Time A', time2: 'Time E' },
+                { numero: 8, time1: 'Time B', time2: 'Time D' },
+                { numero: 9, time1: 'Time B', time2: 'Time C' },
+                { numero: 10, time1: 'Time D', time2: 'Time E' }
+            ];
             
             return jogos;
         }
