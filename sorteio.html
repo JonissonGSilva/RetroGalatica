@@ -204,6 +204,121 @@
         .time-card {
             animation: fadeIn 0.5s ease;
         }
+        
+        .btn-chaveamento {
+            display: block;
+            margin: 0 auto 20px;
+            padding: 10px 25px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+        }
+        
+        .btn-chaveamento:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.6);
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+        }
+        
+        .modal-content {
+            background: linear-gradient(135deg, #1a2b3d 0%, #0f1b2e 100%);
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .modal-header h2 {
+            font-size: 1.5rem;
+            background: linear-gradient(135deg, #10b981, #059669);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .close {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+        
+        .close:hover {
+            color: #ffffff;
+        }
+        
+        .tabela-chaveamento {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        
+        .tabela-chaveamento th {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.9);
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .tabela-chaveamento td {
+            padding: 10px 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 0.85rem;
+        }
+        
+        .tabela-chaveamento tr:hover {
+            background: rgba(255, 255, 255, 0.03);
+        }
+        
+        .tabela-chaveamento tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .numero-jogo {
+            color: rgba(255, 255, 255, 0.6);
+            font-weight: 500;
+            width: 80px;
+        }
+        
+        .confronto {
+            color: #ffffff;
+            font-weight: 500;
+        }
     </style>
 </head>
 <body>
@@ -214,8 +329,20 @@
         <h1>⚽ Sorteio de Times</h1>
         
         <button class="btn-sortear" onclick="realizarSorteio()">🎲 Sortear Times</button>
+        <button class="btn-chaveamento" onclick="mostrarChaveamento()">📋 Ver Chaveamento dos Jogos</button>
         
         <div id="resultado"></div>
+        
+        <!-- Modal do Chaveamento -->
+        <div id="modalChaveamento" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>📋 Chaveamento dos Jogos</h2>
+                    <span class="close" onclick="fecharChaveamento()">&times;</span>
+                </div>
+                <div id="conteudoChaveamento"></div>
+            </div>
+        </div>
     </div>
     
     <script>
@@ -260,6 +387,7 @@
         ];
         
         // Grupo de jogadores que não podem estar juntos
+        // Nenhum desses 4 jogadores pode estar no mesmo time
         const grupoRestrito = ['Arnaldo', 'Kelvin', 'Tavares', 'Vertinho'];
         
         function embaralhar(array) {
@@ -313,7 +441,8 @@
                 // Verifica se o time tem exatamente 5 jogadores
                 if (time.length !== 5) {
                     resultado.valido = false;
-                    resultado.erros.push(`Time ${i + 1} tem ${time.length} jogadores. Esperado: 5.`);
+                    const letraTime = String.fromCharCode(65 + i);
+                    resultado.erros.push(`Time ${letraTime} tem ${time.length} jogadores. Esperado: 5.`);
                 }
                 
                 // Verifica duplicatas e coleta jogadores
@@ -349,7 +478,7 @@
             for (const jogador of jogadoresNosTimes) {
                 if (!jogadoresEsperadosSet.has(jogador)) {
                     resultado.valido = false;
-                    resultado.erros.push(`Jogador "${jogador}" está nos times mas não deveria estar (deveria estar no Time 5).`);
+                    resultado.erros.push(`Jogador "${jogador}" está nos times mas não deveria estar (deveria estar no Time E).`);
                 }
             }
             
@@ -365,10 +494,22 @@
             }
             
             if (resultado.jogadoresDuplicados.length > 0) {
-                const duplicadosStr = resultado.jogadoresDuplicados.map(d => 
-                    `${d.jogador} (Times: ${d.times.join(', ')})`
-                ).join(', ');
+                const duplicadosStr = resultado.jogadoresDuplicados.map(d => {
+                    const timesLetras = d.times.map(t => String.fromCharCode(64 + t)).join(', ');
+                    return `${d.jogador} (Times: ${timesLetras})`;
+                }).join(', ');
                 resultado.erros.push(`Jogadores duplicados: ${duplicadosStr}`);
+            }
+            
+            // Verifica restrições: nenhum dos 4 jogadores restritos pode estar no mesmo time
+            const grupoRestrito = ['Arnaldo', 'Kelvin', 'Tavares', 'Vertinho'];
+            for (let i = 0; i < times.length; i++) {
+                const restritosNoTime = times[i].filter(j => grupoRestrito.includes(j));
+                if (restritosNoTime.length > 1) {
+                    resultado.valido = false;
+                    const letraTime = String.fromCharCode(65 + i);
+                    resultado.erros.push(`Time ${letraTime} tem múltiplos jogadores restritos: ${restritosNoTime.join(', ')}`);
+                }
             }
             
             return resultado;
@@ -381,7 +522,33 @@
             // Pequeno delay para mostrar o loading
             setTimeout(() => {
                 try {
-                    const resultado = sortearTimes();
+                    let resultado;
+                    let tentativasSorteio = 0;
+                    const maxTentativasSorteio = 50;
+                    
+                    // Tenta fazer o sorteio até que não haja violações de restrição ou jogadores faltando
+                    do {
+                        resultado = sortearTimes();
+                        tentativasSorteio++;
+                        
+                        // Verifica se há problemas críticos que precisam de novo sorteio
+                        const temJogadoresFaltando = resultado.validacao && resultado.validacao.jogadoresFaltando && resultado.validacao.jogadoresFaltando.length > 0;
+                        const temRestricoesVioladas = resultado.validacao && resultado.validacao.erros && 
+                            resultado.validacao.erros.some(e => e.includes('múltiplos jogadores restritos'));
+                        const temProblemas = !resultado.validacao.valido && (temJogadoresFaltando || temRestricoesVioladas);
+                        
+                        if (!temProblemas) {
+                            break; // Sorteio válido, sai do loop
+                        }
+                        
+                        if (tentativasSorteio >= maxTentativasSorteio) {
+                            console.warn(`⚠️ Máximo de tentativas (${maxTentativasSorteio}) atingido. Usando último resultado.`);
+                            break;
+                        }
+                        
+                        console.log(`🔄 Refazendo sorteio (tentativa ${tentativasSorteio}/${maxTentativasSorteio})...`);
+                    } while (tentativasSorteio < maxTentativasSorteio);
+                    
                     exibirResultado(resultado);
                 } catch (error) {
                     resultadoDiv.innerHTML = `<div class="erro">Erro ao realizar sorteio: ${error.message}</div>`;
@@ -455,7 +622,8 @@
                         times[i].push(atacantesEmbaralhados.shift());
                     } else {
                         // Não há mais jogadores disponíveis - isso não deveria acontecer com 20 jogadores
-                        console.warn(`Aviso: Time ${i + 1} tem apenas ${times[i].length} jogadores. Esperado: 5.`);
+                        const letraTime = String.fromCharCode(65 + i);
+                        console.warn(`Aviso: Time ${letraTime} tem apenas ${times[i].length} jogadores. Esperado: 5.`);
                         break;
                     }
                 }
@@ -468,7 +636,8 @@
                 ...atacantesEmbaralhados
             ];
             
-            // Verifica e corrige restrição (grupo_restrito não pode estar no mesmo time)
+            // Verifica e corrige restrição: NENHUM dos 4 jogadores (Arnaldo, Kelvin, Tavares, Vertinho) 
+            // pode estar no mesmo time. Se houver mais de 1 no mesmo time, redistribui.
             // Redistribui respeitando: sequencial, sem duplicatas, 5 por time nos 4 primeiros
             let tentativas = 0;
             const maxTentativas = 100;
@@ -476,11 +645,12 @@
             while (tentativas < maxTentativas) {
                 let violacao = false;
                 
-                // Verifica cada time
+                // Verifica cada time - garante que não há mais de 1 jogador restrito no mesmo time
                 for (let idx = 0; idx < times.length; idx++) {
                     const time = times[idx];
                     const restritosNoTime = time.filter(j => grupoRestrito.includes(j));
                     
+                    // Se há mais de 1 jogador restrito no mesmo time, violação detectada
                     if (restritosNoTime.length > 1) {
                         violacao = true;
                         // Move um jogador restrito para outro time
@@ -674,7 +844,8 @@
                         }
                         // Se ainda não conseguiu preencher, para para evitar loop infinito
                         if (!encontrou) {
-                            console.warn(`Aviso: Time ${i + 1} ainda tem apenas ${times[i].length} jogadores após todas as tentativas.`);
+                            const letraTime = String.fromCharCode(65 + i);
+                            console.warn(`Aviso: Time ${letraTime} ainda tem apenas ${times[i].length} jogadores após todas as tentativas.`);
                             break;
                         }
                     }
@@ -683,8 +854,102 @@
                 console.warn(`Aviso: Total de jogadores nos times (${totalJogadoresNosTimes}) não é 20. Esperado: 20.`);
             }
             
+            // VERIFICAÇÃO FINAL DE RESTRIÇÕES: Garante que nenhum dos 4 jogadores restritos está no mesmo time
+            for (let i = 0; i < 4; i++) {
+                const restritosNoTime = times[i].filter(j => grupoRestrito.includes(j));
+                if (restritosNoTime.length > 1) {
+                    console.warn(`⚠️ Violação de restrição detectada no Time ${String.fromCharCode(65 + i)}: ${restritosNoTime.join(', ')}`);
+                    // Move todos os jogadores restritos exceto o primeiro para outros times
+                    for (let j = 1; j < restritosNoTime.length; j++) {
+                        const jogadorParaMover = restritosNoTime[j];
+                        const indexJogador = times[i].indexOf(jogadorParaMover);
+                        times[i].splice(indexJogador, 1);
+                        
+                        // Encontra um time sem jogadores restritos
+                        let timeEncontrado = false;
+                        for (let outroIdx = 0; outroIdx < 4; outroIdx++) {
+                            if (outroIdx !== i) {
+                                const temRestrito = times[outroIdx].some(j => grupoRestrito.includes(j));
+                                const temEspaco = times[outroIdx].length < 5;
+                                if (!temRestrito && temEspaco) {
+                                    times[outroIdx].push(jogadorParaMover);
+                                    timeEncontrado = true;
+                                    console.log(`✅ Jogador "${jogadorParaMover}" movido do Time ${String.fromCharCode(65 + i)} para o Time ${String.fromCharCode(65 + outroIdx)}`);
+                                    break;
+                                }
+                            }
+                        }
+                        
+                        // Se não encontrou time sem restrito, coloca em qualquer time com espaço
+                        if (!timeEncontrado) {
+                            for (let outroIdx = 0; outroIdx < 4; outroIdx++) {
+                                if (outroIdx !== i && times[outroIdx].length < 5) {
+                                    times[outroIdx].push(jogadorParaMover);
+                                    console.log(`✅ Jogador "${jogadorParaMover}" movido do Time ${String.fromCharCode(65 + i)} para o Time ${String.fromCharCode(65 + outroIdx)} (time já tinha restrito)`);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            
+            // Preenche times que ficaram com menos de 5 após mover jogadores restritos
+            for (let i = 0; i < 4; i++) {
+                while (times[i].length < 5) {
+                    // Busca jogadores não restritos de outros times ou dos restantes
+                    let jogadorEncontrado = false;
+                    
+                    // Primeiro tenta pegar de outros times que tenham mais de 5
+                    for (let j = 0; j < 4; j++) {
+                        if (j !== i && times[j].length > 5) {
+                            const jogadorExtra = times[j].pop();
+                            // Só adiciona se não criar violação de restrição
+                            const restritosNoTime = times[i].filter(r => grupoRestrito.includes(r));
+                            if (!grupoRestrito.includes(jogadorExtra) || restritosNoTime.length === 0) {
+                                times[i].push(jogadorExtra);
+                                jogadorEncontrado = true;
+                                break;
+                            } else {
+                                // Se adicionar criaria violação, devolve e tenta outro
+                                times[j].push(jogadorExtra);
+                            }
+                        }
+                    }
+                    
+                    // Se não encontrou, tenta dos restantes
+                    if (!jogadorEncontrado && jogadoresRestantes.length > 0) {
+                        const jogadorRestante = jogadoresRestantes.shift();
+                        const restritosNoTime = times[i].filter(r => grupoRestrito.includes(r));
+                        if (!grupoRestrito.includes(jogadorRestante) || restritosNoTime.length === 0) {
+                            times[i].push(jogadorRestante);
+                            jogadorEncontrado = true;
+                        } else {
+                            // Se adicionar criaria violação, devolve
+                            jogadoresRestantes.unshift(jogadorRestante);
+                        }
+                    }
+                    
+                    if (!jogadorEncontrado) {
+                        break; // Não há mais jogadores disponíveis
+                    }
+                }
+            }
+            
             // VALIDAÇÃO FINAL: Verifica se todos os jogadores estão presentes e sem duplicatas
             let validacao = validarSorteio(times, jogadores4Times, time5);
+            
+            // Verifica novamente as restrições após todas as correções
+            let restricoesOk = true;
+            for (let i = 0; i < 4; i++) {
+                const restritosNoTime = times[i].filter(j => grupoRestrito.includes(j));
+                if (restritosNoTime.length > 1) {
+                    restricoesOk = false;
+                    console.error(`❌ ERRO: Time ${String.fromCharCode(65 + i)} ainda tem múltiplos jogadores restritos: ${restritosNoTime.join(', ')}`);
+                    validacao.valido = false;
+                    validacao.erros.push(`Time ${String.fromCharCode(65 + i)} tem múltiplos jogadores restritos: ${restritosNoTime.join(', ')}`);
+                }
+            }
             
             if (!validacao.valido) {
                 console.error('❌ Erro na validação do sorteio:', validacao.erros);
@@ -730,25 +995,77 @@
                         }
                         
                         // Se encontrou o jogador e ele foi removido de onde estava, adiciona ao time incompleto
+                        // IMPORTANTE: Verifica restrições ao adicionar
                         if (jogadorEncontrado && jogadorRemovido) {
-                            // Encontra o primeiro time que tiver menos de 5
+                            // Encontra um time que tenha menos de 5 e não viole restrições
+                            let jogadorAdicionado = false;
                             for (let i = 0; i < 4; i++) {
                                 if (times[i].length < 5) {
+                                    const restritosNoTime = times[i].filter(j => grupoRestrito.includes(j));
+                                    // Se o time já tem um restrito e o jogador faltante também é restrito, não pode adicionar
+                                    if (restritosNoTime.length > 0 && grupoRestrito.includes(jogadorFaltante)) {
+                                        continue; // Tenta próximo time
+                                    }
                                     times[i].push(jogadorFaltante);
-                                    console.log(`✅ Jogador "${jogadorFaltante}" adicionado ao Time ${i + 1}`);
+                                    const letraTime = String.fromCharCode(65 + i);
+                                    console.log(`✅ Jogador "${jogadorFaltante}" adicionado ao Time ${letraTime}`);
+                                    jogadorAdicionado = true;
                                     break;
+                                }
+                            }
+                            
+                            // Se não conseguiu adicionar em nenhum time (todos têm restritos), tenta trocar
+                            if (!jogadorAdicionado && grupoRestrito.includes(jogadorFaltante)) {
+                                // Busca um time com restrito e tenta trocar com um time sem restrito
+                                for (let i = 0; i < 4; i++) {
+                                    const restritosNoTime = times[i].filter(j => grupoRestrito.includes(j));
+                                    if (restritosNoTime.length > 0 && times[i].length < 5) {
+                                        // Este time tem restrito, tenta trocar o restrito com outro time
+                                        const restritoAtual = restritosNoTime[0];
+                                        for (let j = 0; j < 4; j++) {
+                                            if (j !== i && times[j].length < 5) {
+                                                const restritosNoTimeJ = times[j].filter(r => grupoRestrito.includes(r));
+                                                if (restritosNoTimeJ.length === 0) {
+                                                    // Troca: remove restrito do time i, adiciona ao time j
+                                                    // Remove restrito do time i
+                                                    const indexRestrito = times[i].indexOf(restritoAtual);
+                                                    times[i].splice(indexRestrito, 1);
+                                                    // Adiciona restrito ao time j
+                                                    times[j].push(restritoAtual);
+                                                    // Adiciona jogador faltante ao time i
+                                                    times[i].push(jogadorFaltante);
+                                                    console.log(`✅ Troca realizada: "${restritoAtual}" movido para Time ${String.fromCharCode(65 + j)}, "${jogadorFaltante}" adicionado ao Time ${String.fromCharCode(65 + i)}`);
+                                                    jogadorAdicionado = true;
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                        if (jogadorAdicionado) break;
+                                    }
                                 }
                             }
                         } else if (!jogadorEncontrado) {
                             // Se o jogador realmente não foi encontrado, tenta buscar em jogadores4Times
                             // e adicionar diretamente (caso tenha sido perdido no processo)
                             if (jogadores4Times.includes(jogadorFaltante)) {
+                                let jogadorAdicionado = false;
                                 for (let i = 0; i < 4; i++) {
                                     if (times[i].length < 5) {
+                                        const restritosNoTime = times[i].filter(j => grupoRestrito.includes(j));
+                                        // Se o time já tem um restrito e o jogador faltante também é restrito, não pode adicionar
+                                        if (restritosNoTime.length > 0 && grupoRestrito.includes(jogadorFaltante)) {
+                                            continue; // Tenta próximo time
+                                        }
                                         times[i].push(jogadorFaltante);
-                                        console.log(`✅ Jogador "${jogadorFaltante}" adicionado diretamente ao Time ${i + 1}`);
+                                        const letraTime = String.fromCharCode(65 + i);
+                                        console.log(`✅ Jogador "${jogadorFaltante}" adicionado diretamente ao Time ${letraTime}`);
+                                        jogadorAdicionado = true;
                                         break;
                                     }
+                                }
+                                
+                                if (!jogadorAdicionado) {
+                                    console.warn(`⚠️ Não foi possível adicionar "${jogadorFaltante}" respeitando restrições. Será necessário refazer o sorteio.`);
                                 }
                             } else {
                                 console.warn(`⚠️ Jogador "${jogadorFaltante}" não foi encontrado em nenhum lugar.`);
@@ -776,22 +1093,52 @@
                 }
                 
                 // Preenche times que ficaram com menos de 5 após remover duplicatas
+                // IMPORTANTE: Verifica restrições ao adicionar jogadores
                 for (let i = 0; i < 4; i++) {
                     while (times[i].length < 5) {
+                        const restritosNoTime = times[i].filter(j => grupoRestrito.includes(j));
+                        let jogadorAdicionado = false;
+                        
                         if (jogadoresRestantes.length > 0) {
-                            times[i].push(jogadoresRestantes.shift());
+                            // Tenta encontrar um jogador que não viole restrições
+                            for (let r = 0; r < jogadoresRestantes.length; r++) {
+                                const candidato = jogadoresRestantes[r];
+                                // Se o time já tem um restrito, não pode adicionar outro
+                                if (restritosNoTime.length > 0 && grupoRestrito.includes(candidato)) {
+                                    continue; // Pula este candidato
+                                }
+                                // Pode adicionar este jogador
+                                jogadoresRestantes.splice(r, 1);
+                                times[i].push(candidato);
+                                jogadorAdicionado = true;
+                                break;
+                            }
+                            
+                            // Se não encontrou candidato adequado, adiciona qualquer um (mas pode criar violação)
+                            if (!jogadorAdicionado && jogadoresRestantes.length > 0) {
+                                times[i].push(jogadoresRestantes.shift());
+                                jogadorAdicionado = true;
+                            }
                         } else if (time5.length > 0) {
                             // Se não há restantes, verifica se há jogadores no time 5 que deveriam estar nos times
-                            const jogadorTime5 = time5.find(j => jogadores4Times.includes(j));
+                            const jogadorTime5 = time5.find(j => {
+                                if (!jogadores4Times.includes(j)) return false;
+                                // Se o time já tem um restrito, não pode adicionar outro restrito
+                                if (restritosNoTime.length > 0 && grupoRestrito.includes(j)) return false;
+                                return true;
+                            });
+                            
                             if (jogadorTime5) {
                                 const index = time5.indexOf(jogadorTime5);
                                 time5.splice(index, 1);
                                 times[i].push(jogadorTime5);
-                                console.log(`✅ Jogador "${jogadorTime5}" movido do Time 5 para o Time ${i + 1}`);
-                            } else {
-                                break; // Não há mais jogadores disponíveis
+                                const letraTime = String.fromCharCode(65 + i); // A=65, B=66, etc.
+                                console.log(`✅ Jogador "${jogadorTime5}" movido do Time E para o Time ${letraTime}`);
+                                jogadorAdicionado = true;
                             }
-                        } else {
+                        }
+                        
+                        if (!jogadorAdicionado) {
                             break; // Não há mais jogadores disponíveis
                         }
                     }
@@ -799,6 +1146,17 @@
                 
                 // Revalida após correções
                 validacao = validarSorteio(times, jogadores4Times, time5);
+                
+                // Verifica novamente as restrições após correções automáticas
+                for (let i = 0; i < 4; i++) {
+                    const restritosNoTime = times[i].filter(j => grupoRestrito.includes(j));
+                    if (restritosNoTime.length > 1) {
+                        console.error(`❌ ERRO: Time ${String.fromCharCode(65 + i)} ainda tem múltiplos jogadores restritos após correção: ${restritosNoTime.join(', ')}`);
+                        validacao.valido = false;
+                        validacao.erros.push(`Time ${String.fromCharCode(65 + i)} tem múltiplos jogadores restritos: ${restritosNoTime.join(', ')}`);
+                    }
+                }
+                
                 if (validacao.valido) {
                     console.log('✅ Validação passou após correções automáticas');
                 } else {
@@ -808,9 +1166,13 @@
                 console.log('✅ Validação passou: Todos os jogadores estão presentes e sem duplicatas');
             }
             
+            // Função auxiliar para converter número em letra
+            const numeroParaLetra = (num) => String.fromCharCode(64 + num); // 1->A, 2->B, etc.
+            
             return {
                 times: times.map((time, index) => ({
                     numero: index + 1,
+                    letra: numeroParaLetra(index + 1),
                     jogadores: time,
                     posicoes: {}
                 })),
@@ -852,7 +1214,7 @@
                 html += `
                     <div class="time-card">
                         <div class="time-header">
-                            <div class="time-numero">Time ${time.numero} <span style="font-size: 0.7em; color: rgba(255,255,255,0.5);">(${time.jogadores.length})</span></div>
+                            <div class="time-numero">Time ${time.letra} <span style="font-size: 0.7em; color: rgba(255,255,255,0.5);">(${time.jogadores.length})</span></div>
                             <div class="time-posicoes">${posicoesStr}</div>
                         </div>
                         ${time.jogadores.map(jogador => {
@@ -869,12 +1231,12 @@
                 `;
             }
             
-            // Exibe o time 5
+            // Exibe o time 5 (Time E)
             if (resultado.time5.length > 0) {
                 html += `
                     <div class="time-card time-5-card">
                         <div class="time-header">
-                            <div class="time-numero">Time 5</div>
+                            <div class="time-numero">Time E</div>
                             <div class="time-posicoes">Reservas</div>
                         </div>
                         ${resultado.time5.map(jogador => {
@@ -893,6 +1255,60 @@
             
             html += '</div>';
             resultadoDiv.innerHTML = html;
+        }
+        
+        function gerarChaveamento() {
+            // Chaveamento round-robin para 5 times (10 jogos)
+            const times = ['Time A', 'Time B', 'Time C', 'Time D', 'Time E'];
+            const jogos = [];
+            let numeroJogo = 1;
+            
+            // Gera todos os confrontos possíveis
+            for (let i = 0; i < times.length; i++) {
+                for (let j = i + 1; j < times.length; j++) {
+                    jogos.push({
+                        numero: numeroJogo++,
+                        time1: times[i],
+                        time2: times[j]
+                    });
+                }
+            }
+            
+            return jogos;
+        }
+        
+        function mostrarChaveamento() {
+            const modal = document.getElementById('modalChaveamento');
+            const conteudo = document.getElementById('conteudoChaveamento');
+            const jogos = gerarChaveamento();
+            
+            let html = '<table class="tabela-chaveamento">';
+            html += '<thead><tr><th>Jogo</th><th>Confronto</th></tr></thead>';
+            html += '<tbody>';
+            
+            for (const jogo of jogos) {
+                html += `<tr>
+                    <td class="numero-jogo">Jogo ${jogo.numero}</td>
+                    <td class="confronto">${jogo.time1} × ${jogo.time2}</td>
+                </tr>`;
+            }
+            
+            html += '</tbody></table>';
+            conteudo.innerHTML = html;
+            modal.style.display = 'block';
+        }
+        
+        function fecharChaveamento() {
+            const modal = document.getElementById('modalChaveamento');
+            modal.style.display = 'none';
+        }
+        
+        // Fecha o modal ao clicar fora dele
+        window.onclick = function(event) {
+            const modal = document.getElementById('modalChaveamento');
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
         }
     </script>
 </body>
