@@ -205,119 +205,67 @@
             animation: fadeIn 0.5s ease;
         }
         
-        .btn-chaveamento {
-            display: block;
-            margin: 0 auto 20px;
-            padding: 10px 25px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            background: linear-gradient(135deg, #10b981, #059669);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
-        }
-        
-        .btn-chaveamento:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.6);
-        }
-        
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(5px);
-        }
-        
-        .modal-content {
-            background: linear-gradient(135deg, #1a2b3d 0%, #0f1b2e 100%);
-            margin: 5% auto;
-            padding: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 16px;
-            width: 90%;
-            max-width: 600px;
-            max-height: 80vh;
-            overflow-y: auto;
-            animation: fadeIn 0.3s ease;
-        }
-        
-        .modal-header {
+        .chaveamento-container {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
+            flex-direction: column;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .rodada {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .rodada-titulo {
+            font-size: 1rem;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 10px;
+            padding-bottom: 8px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
         
-        .modal-header h2 {
-            font-size: 1.5rem;
-            background: linear-gradient(135deg, #10b981, #059669);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+        .jogos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 10px;
         }
         
-        .close {
-            color: rgba(255, 255, 255, 0.7);
-            font-size: 28px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: color 0.3s ease;
+        .jogo-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            padding: 10px;
         }
         
-        .close:hover {
-            color: #ffffff;
+        .jogo-numero {
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.5);
+            margin-bottom: 5px;
         }
         
-        .tabela-chaveamento {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
+        .jogo-times {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
         }
         
-        .tabela-chaveamento th {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 12px;
-            text-align: left;
-            font-weight: 600;
-            font-size: 0.9rem;
-            color: rgba(255, 255, 255, 0.9);
-            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .tabela-chaveamento td {
-            padding: 10px 12px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        .time-jogo {
+            padding: 6px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 4px;
             font-size: 0.85rem;
         }
         
-        .tabela-chaveamento tr:hover {
-            background: rgba(255, 255, 255, 0.03);
-        }
-        
-        .tabela-chaveamento tr:last-child td {
-            border-bottom: none;
-        }
-        
-        .numero-jogo {
-            color: rgba(255, 255, 255, 0.6);
-            font-weight: 500;
-            width: 80px;
-        }
-        
-        .confronto {
-            color: #ffffff;
-            font-weight: 500;
+        .vs {
+            text-align: center;
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.4);
+            margin: 3px 0;
         }
     </style>
 </head>
@@ -329,19 +277,13 @@
         <h1>⚽ Sorteio de Times</h1>
         
         <button class="btn-sortear" onclick="realizarSorteio()">🎲 Sortear Times</button>
-        <button class="btn-chaveamento" onclick="mostrarChaveamento()">📋 Ver Chaveamento dos Jogos</button>
         
         <div id="resultado"></div>
         
-        <!-- Modal do Chaveamento -->
-        <div id="modalChaveamento" class="modal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h2>📋 Chaveamento dos Jogos</h2>
-                    <span class="close" onclick="fecharChaveamento()">&times;</span>
-                </div>
-                <div id="conteudoChaveamento"></div>
-            </div>
+        <!-- Chaveamento dos Jogos -->
+        <div id="chaveamento" style="display: none; margin-top: 30px;">
+            <h2 style="text-align: center; margin-bottom: 20px; font-size: 1.5rem; background: linear-gradient(135deg, #10b981, #059669); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">📋 Chaveamento dos Jogos</h2>
+            <div id="conteudoChaveamento"></div>
         </div>
     </div>
     
@@ -375,15 +317,13 @@
             'Arthur': 'ATA'
         };
         
-        // Jogadores que vão para o time 5 (os 5 últimos da lista)
-        const time5 = ['Matador', 'Israel', 'Luiz', 'Vini', 'Arthur'];
-        
-        // Jogadores que devem estar nos 4 times (todos exceto os 5 últimos)
-        const jogadores4Times = [
+        // Todos os jogadores que podem ser sorteados (incluindo os que antes iam para o time 5)
+        const todosJogadores = [
             'Arnaldo', 'Ronald', 'Luiz Kelvin', 'Kawa Messi', 'Henrique',
             'Vertinho', 'Cabinha', 'Weslly', 'Guilherme', 'Nilson',
             'Tavares', 'Samuel', 'Jonis', 'Adelson', 'Deyvde',
-            'Kelvin', 'Andrew', 'Lito', 'Caio', 'Luan'
+            'Kelvin', 'Andrew', 'Lito', 'Caio', 'Luan',
+            'Matador', 'Israel', 'Luiz', 'Vini', 'Arthur'
         ];
         
         // Grupo de jogadores que não podem estar juntos
@@ -407,7 +347,7 @@
             return 'ATA';
         }
         
-        function validarSorteio(times, jogadores4Times, time5) {
+        function validarSorteio(times, todosJogadores, time5) {
             /**
              * Valida se o sorteio está correto:
              * 1. Todos os jogadores dos 4 times estão presentes (sem duplicatas)
@@ -427,10 +367,10 @@
                 jogadoresFaltando: [],
                 jogadoresDuplicados: [],
                 totalJogadoresNosTimes: 0,
-                totalEsperado: jogadores4Times.length
+                totalEsperado: 20 // 4 times x 5 jogadores = 20
             };
             
-            // Coleta todos os jogadores dos 4 times
+            // Coleta todos os jogadores dos 4 times e do time 5
             const jogadoresNosTimes = [];
             const jogadoresVistos = new Map(); // Map<jogador, [indices dos times]>
             
@@ -463,26 +403,18 @@
                 }
             }
             
-            // Verifica se todos os jogadores esperados estão presentes
-            const jogadoresEsperadosSet = new Set(jogadores4Times);
-            const jogadoresPresentesSet = new Set(jogadoresNosTimes);
+            // Verifica se todos os jogadores esperados estão presentes (nos 4 times ou no time 5)
+            const jogadoresEsperadosSet = new Set(todosJogadores);
+            const jogadoresPresentesSet = new Set([...jogadoresNosTimes, ...time5]);
             
-            for (const jogador of jogadores4Times) {
+            for (const jogador of todosJogadores) {
                 if (!jogadoresPresentesSet.has(jogador)) {
                     resultado.jogadoresFaltando.push(jogador);
                     resultado.valido = false;
                 }
             }
             
-            // Verifica se há jogadores extras (que não deveriam estar nos 4 times)
-            for (const jogador of jogadoresNosTimes) {
-                if (!jogadoresEsperadosSet.has(jogador)) {
-                    resultado.valido = false;
-                    resultado.erros.push(`Jogador "${jogador}" está nos times mas não deveria estar (deveria estar no Time E).`);
-                }
-            }
-            
-            // Verifica total de jogadores
+            // Verifica total de jogadores nos 4 times
             if (resultado.totalJogadoresNosTimes !== resultado.totalEsperado) {
                 resultado.valido = false;
                 resultado.erros.push(`Total de jogadores nos times: ${resultado.totalJogadoresNosTimes}. Esperado: ${resultado.totalEsperado}.`);
@@ -550,6 +482,7 @@
                     } while (tentativasSorteio < maxTentativasSorteio);
                     
                     exibirResultado(resultado);
+                    exibirChaveamento();
                 } catch (error) {
                     resultadoDiv.innerHTML = `<div class="erro">Erro ao realizar sorteio: ${error.message}</div>`;
                 }
@@ -557,12 +490,12 @@
         }
         
         function sortearTimes() {
-            // Separa jogadores por posição
+            // Separa jogadores por posição (incluindo todos os jogadores agora)
             const zagueiros = [];
             const meias = [];
             const atacantes = [];
             
-            for (const nome of jogadores4Times) {
+            for (const nome of todosJogadores) {
                 const posicao = normalizarPosicao(jogadoresComPosicao[nome] || 'ATA');
                 if (posicao === 'ZAG') {
                     zagueiros.push(nome);
@@ -732,8 +665,8 @@
                 times[i].forEach(j => todosJogadoresNosTimes.add(j));
             }
             
-            // Jogadores restantes são aqueles de jogadores4Times que não estão nos times
-            let jogadoresRestantes = jogadores4Times.filter(j => !todosJogadoresNosTimes.has(j));
+            // Jogadores restantes são aqueles de todosJogadores que não estão nos times
+            let jogadoresRestantes = todosJogadores.filter(j => !todosJogadoresNosTimes.has(j));
             
             // Garante que cada time tenha no máximo 5 jogadores
             // Se algum time tiver mais de 5, move os extras para restantes
@@ -936,8 +869,15 @@
                 }
             }
             
+            // Coleta jogadores restantes para o time 5
+            const todosJogadoresNosTimesFinal = new Set();
+            for (let i = 0; i < 4; i++) {
+                times[i].forEach(j => todosJogadoresNosTimesFinal.add(j));
+            }
+            const time5 = todosJogadores.filter(j => !todosJogadoresNosTimesFinal.has(j));
+            
             // VALIDAÇÃO FINAL: Verifica se todos os jogadores estão presentes e sem duplicatas
-            let validacao = validarSorteio(times, jogadores4Times, time5);
+            let validacao = validarSorteio(times, todosJogadores, time5);
             
             // Verifica novamente as restrições após todas as correções
             let restricoesOk = true;
@@ -974,22 +914,14 @@
                             jogadorEncontrado = true;
                             jogadorRemovido = true;
                         } else {
-                            // 2. Busca no time 5 (caso tenha sido colocado lá por engano)
-                            const indexTime5 = time5.indexOf(jogadorFaltante);
-                            if (indexTime5 >= 0) {
-                                time5.splice(indexTime5, 1);
-                                jogadorEncontrado = true;
-                                jogadorRemovido = true;
-                            } else {
-                                // 3. Busca em todos os times (pode estar duplicado ou em lugar errado)
-                                for (let i = 0; i < 4; i++) {
-                                    const indexNoTime = times[i].indexOf(jogadorFaltante);
-                                    if (indexNoTime >= 0) {
-                                        // Jogador já está em um time, mas a validação não detectou
-                                        // Isso pode acontecer se houver algum problema na validação
-                                        jogadorEncontrado = true;
-                                        break;
-                                    }
+                            // 2. Busca em todos os times (pode estar duplicado ou em lugar errado)
+                            for (let i = 0; i < 4; i++) {
+                                const indexNoTime = times[i].indexOf(jogadorFaltante);
+                                if (indexNoTime >= 0) {
+                                    // Jogador já está em um time, mas a validação não detectou
+                                    // Isso pode acontecer se houver algum problema na validação
+                                    jogadorEncontrado = true;
+                                    break;
                                 }
                             }
                         }
@@ -1045,9 +977,9 @@
                                 }
                             }
                         } else if (!jogadorEncontrado) {
-                            // Se o jogador realmente não foi encontrado, tenta buscar em jogadores4Times
+                            // Se o jogador realmente não foi encontrado, tenta buscar em todosJogadores
                             // e adicionar diretamente (caso tenha sido perdido no processo)
-                            if (jogadores4Times.includes(jogadorFaltante)) {
+                            if (todosJogadores.includes(jogadorFaltante)) {
                                 let jogadorAdicionado = false;
                                 for (let i = 0; i < 4; i++) {
                                     if (times[i].length < 5) {
@@ -1119,23 +1051,6 @@
                                 times[i].push(jogadoresRestantes.shift());
                                 jogadorAdicionado = true;
                             }
-                        } else if (time5.length > 0) {
-                            // Se não há restantes, verifica se há jogadores no time 5 que deveriam estar nos times
-                            const jogadorTime5 = time5.find(j => {
-                                if (!jogadores4Times.includes(j)) return false;
-                                // Se o time já tem um restrito, não pode adicionar outro restrito
-                                if (restritosNoTime.length > 0 && grupoRestrito.includes(j)) return false;
-                                return true;
-                            });
-                            
-                            if (jogadorTime5) {
-                                const index = time5.indexOf(jogadorTime5);
-                                time5.splice(index, 1);
-                                times[i].push(jogadorTime5);
-                                const letraTime = String.fromCharCode(65 + i); // A=65, B=66, etc.
-                                console.log(`✅ Jogador "${jogadorTime5}" movido do Time E para o Time ${letraTime}`);
-                                jogadorAdicionado = true;
-                            }
                         }
                         
                         if (!jogadorAdicionado) {
@@ -1144,8 +1059,15 @@
                     }
                 }
                 
+                // Recalcula time5 após correções
+                const todosJogadoresNosTimesAposCorrecao = new Set();
+                for (let i = 0; i < 4; i++) {
+                    times[i].forEach(j => todosJogadoresNosTimesAposCorrecao.add(j));
+                }
+                const time5AposCorrecao = todosJogadores.filter(j => !todosJogadoresNosTimesAposCorrecao.has(j));
+                
                 // Revalida após correções
-                validacao = validarSorteio(times, jogadores4Times, time5);
+                validacao = validarSorteio(times, todosJogadores, time5AposCorrecao);
                 
                 // Verifica novamente as restrições após correções automáticas
                 for (let i = 0; i < 4; i++) {
@@ -1176,7 +1098,7 @@
                     jogadores: time,
                     posicoes: {}
                 })),
-                time5: [...time5, ...jogadoresRestantes],
+                time5: time5,
                 posicoes: { ...jogadoresComPosicao },
                 validacao: validacao // Inclui resultado da validação final no retorno
             };
@@ -1277,38 +1199,47 @@
             return jogos;
         }
         
-        function mostrarChaveamento() {
-            const modal = document.getElementById('modalChaveamento');
+        function exibirChaveamento() {
+            const chaveamentoDiv = document.getElementById('chaveamento');
             const conteudo = document.getElementById('conteudoChaveamento');
             const jogos = gerarChaveamento();
             
-            let html = '<table class="tabela-chaveamento">';
-            html += '<thead><tr><th>Jogo</th><th>Confronto</th></tr></thead>';
-            html += '<tbody>';
+            // Organiza os jogos por rodadas (5 times = 5 rodadas, 2 jogos por rodada)
+            const rodadas = [];
+            const jogosPorRodada = 2;
             
-            for (const jogo of jogos) {
-                html += `<tr>
-                    <td class="numero-jogo">Jogo ${jogo.numero}</td>
-                    <td class="confronto">${jogo.time1} × ${jogo.time2}</td>
-                </tr>`;
+            for (let i = 0; i < jogos.length; i += jogosPorRodada) {
+                const rodadaJogos = jogos.slice(i, i + jogosPorRodada);
+                rodadas.push({
+                    numero: Math.floor(i / jogosPorRodada) + 1,
+                    jogos: rodadaJogos
+                });
             }
             
-            html += '</tbody></table>';
+            let html = '';
+            
+            for (const rodada of rodadas) {
+                html += `<div class="rodada">`;
+                html += `<div class="rodada-titulo">Rodada ${rodada.numero}</div>`;
+                html += `<div class="jogos-grid">`;
+                
+                for (const jogo of rodada.jogos) {
+                    html += `<div class="jogo-card">`;
+                    html += `<div class="jogo-numero">Jogo ${jogo.numero}</div>`;
+                    html += `<div class="jogo-times">`;
+                    html += `<div class="time-jogo">${jogo.time1}</div>`;
+                    html += `<div class="vs">VS</div>`;
+                    html += `<div class="time-jogo">${jogo.time2}</div>`;
+                    html += `</div>`;
+                    html += `</div>`;
+                }
+                
+                html += `</div>`;
+                html += `</div>`;
+            }
+            
             conteudo.innerHTML = html;
-            modal.style.display = 'block';
-        }
-        
-        function fecharChaveamento() {
-            const modal = document.getElementById('modalChaveamento');
-            modal.style.display = 'none';
-        }
-        
-        // Fecha o modal ao clicar fora dele
-        window.onclick = function(event) {
-            const modal = document.getElementById('modalChaveamento');
-            if (event.target == modal) {
-                modal.style.display = 'none';
-            }
+            chaveamentoDiv.style.display = 'block';
         }
     </script>
 </body>

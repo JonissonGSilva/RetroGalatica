@@ -188,13 +188,13 @@ def sortear_times() -> Dict:
     Restrições:
     - Arnaldo, Kelvin, Tavares (Matheus Tavares), Vertinho não podem estar no mesmo time
     
-    Jogadores que devem estar nos 4 times:
+    Todos os jogadores podem ser sorteados para os 4 times:
     - Arnaldo, Ronald, Luiz Kelvin, Kawa Messi, Henrique, Vertinho, Cabinha, 
       Weslly, Guilherme, Nilson, Tavares, Samuel, Jonis, Adelson, Deyvde, 
-      Kelvin, Andrew, Lito, Caio, Luan
+      Kelvin, Andrew, Lito, Caio, Luan, Matador, Israel, Luiz, Vini, Arthur
     
-    Jogadores que vão automaticamente para o time 5:
-    - Israel, Luiz, Vini, Arthur, Matador
+    O time 5 será formado pelos jogadores restantes após distribuir 5 jogadores
+    para cada um dos 4 primeiros times.
     """
     # Carrega players.json
     try:
@@ -250,15 +250,13 @@ def sortear_times() -> Dict:
             else:
                 jogadores_com_posicao[nome] = 'ATA'  # Padrão
     
-    # Jogadores que vão para o time 5 (os 5 últimos da lista)
-    time_5 = ['Matador', 'Israel', 'Luiz', 'Vini', 'Arthur']
-    
-    # Jogadores que devem estar nos 4 times (todos exceto os 5 últimos)
-    jogadores_4_times = [
+    # Todos os jogadores que podem ser sorteados (incluindo os que antes iam para o time 5)
+    todos_jogadores = [
         'Arnaldo', 'Ronald', 'Luiz Kelvin', 'Kawa Messi', 'Henrique', 
         'Vertinho', 'Cabinha', 'Weslly', 'Guilherme', 'Nilson', 
         'Tavares', 'Samuel', 'Jonis', 'Adelson', 'Deyvde', 
-        'Kelvin', 'Andrew', 'Lito', 'Caio', 'Luan'
+        'Kelvin', 'Andrew', 'Lito', 'Caio', 'Luan',
+        'Matador', 'Israel', 'Luiz', 'Vini', 'Arthur'
     ]
     
     # Grupo de jogadores que não podem estar juntos
@@ -270,12 +268,12 @@ def sortear_times() -> Dict:
         'Matheus Tavares': 'Tavares'
     }
     
-    # Separa jogadores por posição
+    # Separa jogadores por posição (incluindo todos os jogadores agora)
     zagueiros = []
     meias = []
     atacantes = []
     
-    for nome in jogadores_4_times:
+    for nome in todos_jogadores:
         posicao = jogadores_com_posicao.get(nome, 'ATA')
         if posicao == 'ZAG':
             zagueiros.append(nome)
@@ -422,9 +420,12 @@ def sortear_times() -> Dict:
             if atacantes_rest:
                 times[i].append(atacantes_rest.pop(0))
     
-    # Se ainda houver jogadores não distribuídos, adiciona ao time 5
-    if todos_restantes:
-        time_5.extend(todos_restantes)
+    # Coleta jogadores restantes para o time 5 (os que não foram distribuídos nos 4 times)
+    todos_jogadores_nos_times = set()
+    for time in times:
+        todos_jogadores_nos_times.update(time)
+    
+    time_5 = [j for j in todos_jogadores if j not in todos_jogadores_nos_times]
     
     # Monta resultado
     resultado = {
