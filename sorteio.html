@@ -297,7 +297,7 @@
             'Henrique': 'ZAG',
             'Vertinho': 'ATA',
             'Cabinha': 'ZAG',  // ZAG/MLD -> ZAG
-            'Weslly': 'ZAG',
+            'Weslly': 'ATA',
             'Guilherme': 'ZAG',
             'Nilson': 'ATA',  // Será buscado no players.json se necessário
             'Tavares': 'MEI',
@@ -495,14 +495,23 @@
             const meias = [];
             const atacantes = [];
             
+            // Separa jogadores restritos dos demais
+            const jogadoresRestritos = [];
+            const jogadoresNormais = [];
+            
             for (const nome of todosJogadores) {
                 const posicao = normalizarPosicao(jogadoresComPosicao[nome] || 'ATA');
-                if (posicao === 'ZAG') {
-                    zagueiros.push(nome);
-                } else if (posicao === 'MEI') {
-                    meias.push(nome);
+                if (grupoRestrito.includes(nome)) {
+                    jogadoresRestritos.push(nome);
                 } else {
-                    atacantes.push(nome);
+                    jogadoresNormais.push(nome);
+                    if (posicao === 'ZAG') {
+                        zagueiros.push(nome);
+                    } else if (posicao === 'MEI') {
+                        meias.push(nome);
+                    } else {
+                        atacantes.push(nome);
+                    }
                 }
             }
             
@@ -510,11 +519,18 @@
             const zagueirosEmbaralhados = embaralhar(zagueiros);
             const meiasEmbaralhadas = embaralhar(meias);
             const atacantesEmbaralhados = embaralhar(atacantes);
+            const restritosEmbaralhados = embaralhar(jogadoresRestritos);
             
             // Cria os 4 times (preenchidos sequencialmente)
             const times = [[], [], [], []];
             
-            // Preenche os times sequencialmente: Time 1 primeiro (completo), depois Time 2, etc.
+            // PRIMEIRO: Distribui os jogadores restritos, UM POR TIME (garantindo que nunca fiquem juntos)
+            for (let i = 0; i < Math.min(4, restritosEmbaralhados.length); i++) {
+                times[i].push(restritosEmbaralhados[i]);
+                console.log(`✅ Jogador restrito "${restritosEmbaralhados[i]}" atribuído ao Time ${String.fromCharCode(65 + i)}`);
+            }
+            
+            // SEGUNDO: Preenche os times sequencialmente com os demais jogadores
             // Cada time: 2 ZAG, 1 MEI, 2 ATA (se houver jogadores suficientes)
             // Preenche um time completamente (5 jogadores) antes de passar para o próximo
             for (let i = 0; i < 4; i++) {
@@ -523,7 +539,7 @@
                 // Mas garante que sempre tenha 5 jogadores
                 
                 // 2 Zagueiros (ou menos se não houver)
-                if (zagueirosEmbaralhados.length > 0) {
+                if (zagueirosEmbaralhados.length > 0 && times[i].length < 5) {
                     times[i].push(zagueirosEmbaralhados.shift());
                 }
                 if (zagueirosEmbaralhados.length > 0 && times[i].length < 5) {
@@ -566,14 +582,15 @@
             const todosRestantes = [
                 ...zagueirosEmbaralhados,
                 ...meiasEmbaralhadas,
-                ...atacantesEmbaralhados
+                ...atacantesEmbaralhados,
+                ...restritosEmbaralhados.slice(4) // Jogadores restritos que não foram distribuídos (se houver mais de 4)
             ];
             
             // Verifica e corrige restrição: NENHUM dos 4 jogadores (Arnaldo, Kelvin, Tavares, Vertinho) 
-            // pode estar no mesmo time. Se houver mais de 1 no mesmo time, redistribui.
-            // Redistribui respeitando: sequencial, sem duplicatas, 5 por time nos 4 primeiros
+            // pode estar no mesmo time. Se houver mais de 1 no mesmo time, redistribui FORÇADAMENTE.
+            // Esta verificação é crítica e deve ser executada múltiplas vezes até garantir que não há violações
             let tentativas = 0;
-            const maxTentativas = 100;
+            const maxTentativas = 200;
             
             while (tentativas < maxTentativas) {
                 let violacao = false;
@@ -586,76 +603,53 @@
                     // Se há mais de 1 jogador restrito no mesmo time, violação detectada
                     if (restritosNoTime.length > 1) {
                         violacao = true;
-                        // Move um jogador restrito para outro time
-                        const jogadorParaMover = restritosNoTime[0];
-                        const indexJogador = time.indexOf(jogadorParaMover);
-                        time.splice(indexJogador, 1);
-                        
-                        // Encontra um time que não tenha jogadores restritos e tenha menos de 5
-                        // Busca sequencialmente: Time 1, depois Time 2, etc.
-                        let timeEncontrado = false;
-                        let timeDestinoIdx = -1;
-                        for (let outroIdx = 0; outroIdx < times.length; outroIdx++) {
-                            if (outroIdx !== idx) {
-                                const temRestrito = times[outroIdx].some(j => grupoRestrito.includes(j));
-                                const temEspaco = times[outroIdx].length < 5;
-                                if (!temRestrito && temEspaco) {
-                                    times[outroIdx].push(jogadorParaMover);
-                                    timeEncontrado = true;
-                                    timeDestinoIdx = outroIdx;
-                                    break;
-                                }
-                            }
-                        }
-                        
-                        // Se não encontrou, coloca em qualquer time que não seja o atual e tenha espaço
-                        if (!timeEncontrado) {
-                            for (let outroIdx = 0; outroIdx < times.length; outroIdx++) {
-                                if (outroIdx !== idx && times[outroIdx].length < 5) {
-                                    times[outroIdx].push(jogadorParaMover);
-                                    timeDestinoIdx = outroIdx;
-                                    break;
-                                }
-                            }
-                        }
-                        
-                        // Se o time destino ficou com mais de 5, move o extra para o time que perdeu
-                        if (timeDestinoIdx >= 0 && times[timeDestinoIdx].length > 5) {
-                            const jogadorExtra = times[timeDestinoIdx].pop();
-                            time.push(jogadorExtra);
-                        } else if (time.length < 5) {
-                            // Preenche o time que perdeu o jogador
-                            // Primeiro tenta pegar de outros times que tenham mais de 5
-                            let jogadorExtra = null;
-                            for (let outroIdx = 0; outroIdx < times.length; outroIdx++) {
-                                if (outroIdx !== idx && times[outroIdx].length > 5) {
-                                    jogadorExtra = times[outroIdx].pop();
-                                    break;
-                                }
-                            }
-                            if (jogadorExtra) {
-                                time.push(jogadorExtra);
-                            } else if (todosRestantes.length > 0) {
-                                time.push(todosRestantes.shift());
-                            } else {
-                                // Se não há restantes, busca em qualquer time com mais jogadores
+                        // Move TODOS os jogadores restritos exceto o primeiro para outros times
+                        for (let r = 1; r < restritosNoTime.length; r++) {
+                            const jogadorParaMover = restritosNoTime[r];
+                            const indexJogador = time.indexOf(jogadorParaMover);
+                            if (indexJogador >= 0) {
+                                time.splice(indexJogador, 1);
+                                
+                                // Encontra um time que NÃO tenha jogadores restritos e tenha menos de 5
+                                let timeEncontrado = false;
                                 for (let outroIdx = 0; outroIdx < times.length; outroIdx++) {
-                                    if (outroIdx !== idx && outroIdx !== timeDestinoIdx && times[outroIdx].length > time.length) {
-                                        time.push(times[outroIdx].pop());
-                                        break;
+                                    if (outroIdx !== idx) {
+                                        const temRestrito = times[outroIdx].some(j => grupoRestrito.includes(j));
+                                        const temEspaco = times[outroIdx].length < 5;
+                                        if (!temRestrito && temEspaco) {
+                                            times[outroIdx].push(jogadorParaMover);
+                                            timeEncontrado = true;
+                                            console.log(`✅ Jogador restrito "${jogadorParaMover}" movido do Time ${String.fromCharCode(65 + idx)} para o Time ${String.fromCharCode(65 + outroIdx)}`);
+                                            break;
+                                        }
+                                    }
+                                }
+                                
+                                // Se não encontrou time sem restrito, busca qualquer time com espaço (mas isso pode criar nova violação)
+                                if (!timeEncontrado) {
+                                    for (let outroIdx = 0; outroIdx < times.length; outroIdx++) {
+                                        if (outroIdx !== idx && times[outroIdx].length < 5) {
+                                            times[outroIdx].push(jogadorParaMover);
+                                            console.warn(`⚠️ Jogador restrito "${jogadorParaMover}" movido para Time ${String.fromCharCode(65 + outroIdx)} que pode já ter restrito`);
+                                            break;
+                                        }
                                     }
                                 }
                             }
                         }
-                        break;
+                        break; // Sai do loop de times para verificar novamente
                     }
                 }
                 
                 if (!violacao) {
-                    break;
+                    break; // Não há mais violações
                 }
                 
                 tentativas++;
+            }
+            
+            if (tentativas >= maxTentativas) {
+                console.error('❌ ERRO: Não foi possível resolver todas as violações de restrição após', maxTentativas, 'tentativas');
             }
             
             // Recalcula jogadores restantes após correção de restrições
@@ -695,10 +689,29 @@
             }
             
             // GARANTE que todos os 4 times tenham exatamente 5 jogadores
-            // Primeiro, preenche com restantes
+            // Primeiro, preenche com restantes (verificando restrições)
             for (let i = 0; i < 4; i++) {
                 while (times[i].length < 5 && jogadoresRestantes.length > 0) {
-                    times[i].push(jogadoresRestantes.shift());
+                    const restritosNoTime = times[i].filter(j => grupoRestrito.includes(j));
+                    // Procura um jogador que não viole restrições
+                    let jogadorAdicionado = false;
+                    for (let j = 0; j < jogadoresRestantes.length; j++) {
+                        const candidato = jogadoresRestantes[j];
+                        // Se o time já tem um restrito, não pode adicionar outro restrito
+                        if (restritosNoTime.length > 0 && grupoRestrito.includes(candidato)) {
+                            continue; // Pula este candidato
+                        }
+                        // Pode adicionar este jogador
+                        times[i].push(jogadoresRestantes.splice(j, 1)[0]);
+                        jogadorAdicionado = true;
+                        break;
+                    }
+                    // Se não encontrou candidato adequado, adiciona qualquer um (mas pode criar violação que será corrigida depois)
+                    if (!jogadorAdicionado && jogadoresRestantes.length > 0) {
+                        times[i].push(jogadoresRestantes.shift());
+                    } else if (!jogadorAdicionado) {
+                        break; // Não há mais jogadores disponíveis
+                    }
                 }
             }
             
@@ -813,13 +826,39 @@
                             }
                         }
                         
-                        // Se não encontrou time sem restrito, coloca em qualquer time com espaço
+                        // Se não encontrou time sem restrito, NÃO adiciona (isso violaria a regra)
+                        // Em vez disso, tenta trocar com um jogador não-restrito de outro time
                         if (!timeEncontrado) {
+                            // Busca um time sem restrito que tenha um jogador não-restrito para trocar
                             for (let outroIdx = 0; outroIdx < 4; outroIdx++) {
-                                if (outroIdx !== i && times[outroIdx].length < 5) {
-                                    times[outroIdx].push(jogadorParaMover);
-                                    console.log(`✅ Jogador "${jogadorParaMover}" movido do Time ${String.fromCharCode(65 + i)} para o Time ${String.fromCharCode(65 + outroIdx)} (time já tinha restrito)`);
-                                    break;
+                                if (outroIdx !== i) {
+                                    const temRestrito = times[outroIdx].some(j => grupoRestrito.includes(j));
+                                    if (!temRestrito && times[outroIdx].length >= 1) {
+                                        // Encontra um jogador não-restrito para trocar
+                                        for (let k = 0; k < times[outroIdx].length; k++) {
+                                            const jogadorParaTrocar = times[outroIdx][k];
+                                            if (!grupoRestrito.includes(jogadorParaTrocar)) {
+                                                // Troca: remove restrito do time i, adiciona ao time outroIdx
+                                                // Remove não-restrito do time outroIdx, adiciona ao time i
+                                                times[outroIdx].splice(k, 1);
+                                                times[outroIdx].push(jogadorParaMover);
+                                                times[i].push(jogadorParaTrocar);
+                                                console.log(`✅ Troca realizada: "${jogadorParaMover}" (restrito) movido para Time ${String.fromCharCode(65 + outroIdx)}, "${jogadorParaTrocar}" movido para Time ${String.fromCharCode(65 + i)}`);
+                                                timeEncontrado = true;
+                                                break;
+                                            }
+                                        }
+                                        if (timeEncontrado) break;
+                                    }
+                                }
+                            }
+                            
+                            // Se ainda não encontrou, apenas remove o jogador restrito (será adicionado aos restantes)
+                            if (!timeEncontrado) {
+                                console.error(`❌ ERRO: Não foi possível mover jogador restrito "${jogadorParaMover}" sem violar restrições. Será necessário refazer o sorteio.`);
+                                // Adiciona aos restantes para tentar redistribuir depois
+                                if (!jogadoresRestantes.includes(jogadorParaMover)) {
+                                    jogadoresRestantes.push(jogadorParaMover);
                                 }
                             }
                         }
